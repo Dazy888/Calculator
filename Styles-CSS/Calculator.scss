@@ -1,29 +1,28 @@
 // Main Styles
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Anybody';
+}
+
 .let_m {
   display: none;
   position: absolute;
-  color: black;
-  font-size: 40px;
-  font-family: 'Anybody';
   top: 60px;
   left: 65px;
+
+  color: black;
+  font-size: 40px;
 }
 
 button {
   cursor: pointer;
   transition: 0.3s;
   font-size: 40px;
-  font-family: 'Anybody';
-  padding: 0;
 
   &:hover {
     color: purple !important;
   }
-}
-
-* {
-  margin: 0;
-  padding: 0;
 }
 
 body {
@@ -37,7 +36,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-
   background: purple;
   opacity: 0.9;
 }
@@ -53,17 +51,16 @@ body {
     position: relative;
     text-align: center;
 
-    input {
+    .result_inp {
       width: 485px;
       height: 100px;
-
       margin-bottom: 40px;
       padding-right: 15px;
-      font-size: 50px;
       border-radius: 5px;
       border: 5px solid purple;
       text-align: right;
       font-family: 'Anybody';
+      font-size: 50px;
 
       &:focus-visible {
         outline: none;
@@ -73,18 +70,18 @@ body {
     .memory {
       text-align: center;
 
-      button {
+      .memory__btn {
         width: 85px;
         height: 85px;
         background: transparent;
-
-        font-size: 40px;
         font-family: 'Anybody';
-        color: white;
         margin-right: 25px;
         border-radius: 50%;
         border: 3px solid white;
         transition: 0.6s;
+
+        color: white;
+        font-size: 40px;
 
         &:hover {
           transform: rotate(360deg);
@@ -105,14 +102,13 @@ body {
       align-items: center;
       margin: 10px auto 0 auto;
 
-      button {
+      .controls__btn {
         width: 100px;
         height: 80px;
-
         background: transparent;
         border: 3px solid white;
-        color: white;
         transition: 0.3s;
+        color: white;
 
         &:hover {
           transform: scale(1.2) translate(20px,-20px);
@@ -124,40 +120,29 @@ body {
 }
 
 @media screen and (max-width: 1200px) {
-  .memory {
-    button {
-      &:hover {
-        transform: rotate(0) !important;
-        color: white !important;
-      }
-    }
-  }
-
-  .controls__row {
-    button {
-      &:hover {
-        transform: scale(1) translate(0) !important;
-        box-shadow: 0 0 !important;
-        color: white !important;
-      }
+  button {
+    &:hover {
+      transform: rotate(0) scale(1) translate(0) !important;
+      box-shadow: 0 0 !important;
+      color: white !important;
     }
   }
 }
 
 @media screen and (max-width: 620px) {
   .input {
-    input {
+    .result_inp {
       width: 300px !important;
       height: 80px !important;
     }
   }
 
   .memory {
-    button {
+    .memory__btn {
       width: 65px !important;
       height: 65px !important;
-      font-size: 25px !important;
       margin-right: 15px !important;
+      font-size: 25px !important;
     }
   }
 
@@ -166,7 +151,7 @@ body {
       width: 380px !important;
     }
 
-    button {
+    .controls__btn {
       width: 80px !important;
       height: 60px !important;
       font-size: 30px !important;
@@ -176,11 +161,11 @@ body {
 
 @media screen and (max-width: 490px) {
   .memory {
-    button {
+    .memory__btn {
       width: 55px !important;
       height: 55px !important;
-      font-size: 25px !important;
       margin-right: 15px !important;
+      font-size: 25px !important;
     }
   }
 
@@ -189,7 +174,7 @@ body {
       width: 330px !important;
     }
 
-    button {
+    .controls__btn {
       width: 70px !important;
       height: 50px !important;
       font-size: 20px !important;
@@ -199,18 +184,18 @@ body {
 
 @media screen and (max-width: 400px) {
   .input {
-    input {
+    .result_inp {
       width: 270px !important;
       height: 70px !important;
     }
   }
 
   .memory {
-    button {
+    .memory__btn {
       width: 50px !important;
       height: 50px !important;
-      font-size: 20px !important;
       margin-right: 10px !important;
+      font-size: 20px !important;
     }
   }
 
@@ -219,7 +204,7 @@ body {
       width: 280px !important;
     }
 
-    button {
+    .controls__btn {
       width: 60px !important;
       height: 40px !important;
       font-size: 20px !important;
