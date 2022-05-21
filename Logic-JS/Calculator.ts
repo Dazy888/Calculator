@@ -98,6 +98,21 @@ function checkLastNum(value: string) {
     if (expLastSpace.test(value)) return true
 }
 
+// Equal Function
+function sortEqualArrays(signs: RegExpMatchArray, numbers: RegExpMatchArray, sign: string) {
+    const index: number = signs.indexOf(sign)
+    let operationRes: number = 0
+
+    if (sign === '×') operationRes = parseFloat(numbers[index]) * parseFloat(numbers[index + 1])
+    if (sign === '/') operationRes = parseFloat(numbers[index]) / parseFloat(numbers[index + 1])
+    if (sign === '+') operationRes = parseFloat(numbers[index]) + parseFloat(numbers[index + 1])
+    if (sign === '-') operationRes = parseFloat(numbers[index]) - parseFloat(numbers[index + 1])
+
+    numbers.splice(index, 2)
+    signs.splice(index, 1)
+    numbers.splice(index, 0, operationRes.toString())
+}
+
 
 // Event Listeners
 // Main Operations
@@ -151,35 +166,26 @@ mm.onclick = minusMemory
 ms.onclick = saveMemory
 
 // Default Operations
-function enteringSign(sign: string, value: string) {
+function enteringSign(e, sign: string = null) {
     if (inp.value.length >= 16) return true
-    countingPow(value)
-    if (expLastNum.test(value) && value.length > 0) inp.value = inp.value + ' ' + sign + ' '
+    countingPow(inp.value)
+    if (expLastNum.test(inp.value) && inp.value.length > 0) {
+        if (sign) {
+            inp.value = inp.value + ' ' + sign + ' '
+        } else {
+            inp.value = inp.value + ' ' + e.target.innerText + ' '
+        }
+    }
 }
 
-percent.onclick = () => {
-    enteringSign('%', inp.value)
-}
-
-pow.onclick = () => {
-    enteringSign('□', inp.value)
-}
-
-divide.onclick = () => {
-    enteringSign('÷', inp.value)
-}
-
+percent.onclick = enteringSign
+pow.onclick = enteringSign
+divide.onclick = enteringSign
 multiply.onclick = () => {
-    enteringSign('×', inp.value)
+    enteringSign(null, '×')
 }
-
-minus.onclick = () => {
-    enteringSign('-', inp.value)
-}
-
-plus.onclick = () => {
-    enteringSign('+', inp.value)
-}
+minus.onclick = enteringSign
+plus.onclick = enteringSign
 
 // Last Numbers Operations
 function countingSquare() {
@@ -248,69 +254,24 @@ function equalListener() {
     countingPow(inp.value)
 
     const numbers: RegExpMatchArray = inp.value.match(/(\d+\.\d+)|(-\d+\.\d+)|(\d+)|(-\d+)/g)
-    const signs: any = inp.value.match(/[-+%×÷]/g)
+    const signs: any = inp.value.match(/[-+%×/]/g)
 
-    function sortHelper(sign1: string, sign2: string, sign3: string = undefined) {
-
+    function sortHelper() {
+        if (signs.includes('×') && !signs.includes('/') || signs.includes('×') && signs.indexOf('×') < signs.indexOf('/')) return sortEqualArrays(signs, numbers, '×')
+        if (signs.includes('/') && !signs.includes('×') || signs.includes('/') && signs.indexOf('/') < signs.indexOf('×')) return sortEqualArrays(signs, numbers, '/')
+        if (signs.includes('+') && !signs.includes('-') || signs.includes('+') && signs.indexOf('+') < signs.indexOf('-')) return sortEqualArrays(signs, numbers, '+')
+        if (signs.includes('-') && !signs.includes('+') || signs.includes('-') && signs.indexOf('-') < signs.indexOf('+')) return sortEqualArrays(signs, numbers, '-')
     }
+
+    function sort() {
+        for (let i = 0; i <= signs.length + 1; i++) {
+            sortHelper()
+        }
+    }
+
+    sort()
+    inp.value = parseFloat(numbers[0])
 }
-
-
-
-// function sortHelper(sign1: string, sign2: string, sign3: string = undefined) {
-//     if (sign3) {
-//         if (signs.includes(sign1) && !signs.includes(sign2) || signs.includes(sign1) && signs.indexOf(sign1) < signs.indexOf(sign2) < signs.indexOf(sign3)) {
-//             const index: number = signs.indexOf(sign1)
-//             let operationRes: number = 0
-//
-//             if (sign1 === '+') {
-//                 operationRes = parseFloat(numbers[index]) + parseFloat(numbers[index + 1])
-//             }
-//             if (sign1 === '-') {
-//                 operationRes = parseFloat(numbers[index]) - parseFloat(numbers[index + 1])
-//             }
-//             if (sign1 === '%') {
-//                 operationRes = parseFloat(numbers[index]) / 100 * parseFloat(numbers[index + 1])
-//             }
-//
-//             numbers.splice(index, 2)
-//             signs.splice(index, 1)
-//             numbers.splice(index, 0, operationRes.toString())
-//             return true
-//         }
-//     }
-//     if (signs.includes(sign1) && !signs.includes(sign2) || signs.includes(sign1) && signs.indexOf(sign1) < signs.indexOf(sign2)) {
-//         const index: number = signs.indexOf(sign1)
-//         let operationRes: number = 0
-//
-//         if (sign1 === '×') {
-//             operationRes = parseFloat(numbers[index]) * parseFloat(numbers[index + 1])
-//         }
-//         if (sign1 === '÷') {
-//             operationRes = parseFloat(numbers[index]) / parseFloat(numbers[index + 1])
-//         }
-//
-//
-//         numbers.splice(index, 2)
-//         signs.splice(index, 1)
-//         numbers.splice(index, 0, operationRes.toString())
-//     }
-// }
-//
-// function sort() {
-//     for (let i = 0; i <= signs.length; i++) {
-//         sortHelper('×', '÷')
-//         sortHelper('÷', '×')
-//         sortHelper('+', '-', '%')
-//         sortHelper('-', '+', '%')
-//         sortHelper('%', '+', '-')
-//     }
-// }
-//
-//
-// sort()
-// inp.value = parseFloat(numbers[0])
-
 
 equal.onclick = equalListener
 
@@ -343,11 +304,10 @@ function keyDown(e) {
         inp.value = inp.value + e.key
     }
 
-    if (e.key === '+') minusDivide(e, '%', inp.value)
-    if (e.key === '+') minusDivide(e, '*', inp.value)
-    if (e.key === '+') minusDivide(e, '+', inp.value)
-    if (e.key === '-') minusDivide(e, '-', inp.value)
-    if (e.key === '/') minusDivide(e, '/', inp.value)
+    if (e.key === '*') minusDivide(null, '×', inp.value)
+    if (e.key === '+') minusDivide(null, '+', inp.value)
+    if (e.key === '-') minusDivide(null, '-', inp.value)
+    if (e.key === '/') minusDivide(null, '/', inp.value)
     if (e.key === '+') twoKeys('+', inp.value)
     if (e.key === '%') twoKeys('%', inp.value)
     if (e.key === '*') twoKeys('×', inp.value)

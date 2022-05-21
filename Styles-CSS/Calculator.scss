@@ -104,11 +104,19 @@ body {
       .controls__btn {
         width: 100px;
         height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         background: transparent;
         border: 3px solid white;
         transition: 0.3s;
 
         color: white;
+
+        .multiply_icon {
+          font-size: 100px;
+          height: 25px;
+        }
 
         &:hover {
           transform: scale(1.2) translate(20px,-20px);
