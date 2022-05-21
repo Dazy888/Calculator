@@ -1,11 +1,10 @@
 // Getting All Elements
-
-// Main Elements
+// Main
 const inp: any = document.querySelector('input')
 const cont: any = document.querySelector('.container')
 const zero: any = document.querySelector('.zero')
 
-// Memory Buttons
+// Memory
 const mc: any = document.querySelector('.mc')
 const mr: any = document.querySelector('.mr')
 const mp: any = document.querySelector('.mp')
@@ -14,7 +13,7 @@ const ms: any = document.querySelector('.ms')
 const letterM: any = document.querySelector('.let_m')
 let memorySum: number = 0
 
-// Default Operations Elements
+// Default Operations
 const percent: any = document.querySelector('.percent')
 const pow: any = document.querySelector('.pow')
 const multiply: any = document.querySelector('.multiply')
@@ -24,92 +23,126 @@ const divide: any = document.querySelector('.divide')
 const dot: any = document.querySelector('.dot-btn')
 const equal: any = document.querySelector('.equal')
 
-// Elements For Last Number Operations
-const sqrt: any = document.querySelector('.sqrt')
+// Last Number Operations
+const square: any = document.querySelector('.sqrt')
 const invprop: any = document.querySelector('.invprop')
-const negative: any = document.querySelector('.negative')
+const changeSign: any = document.querySelector('.negative')
 
-// Clear operations variables
+// Clearing
 const ce: any = document.querySelector('.inp-clear')
 const c: any = document.querySelector('.clear')
 const del: any = document.querySelector('.delete')
 
 
 // Helping Functions And Variables
-const expAnyLastNumber: any = /(\d+)$|(\d+\.\d+)$|(-\d+)$|(-\d+\.\d+)$/
-const expSquare: any = /(□ \d+)$/
-const expLastZero: any = /^(0)$|(\s0)$/
+// Number Expressions
+const expAnyLastNumber: RegExp = /(\d+)$|(\d+\.\d+)$|(-\d+)$|(-\d+\.\d+)$/
+const expLastNum: RegExp = /(\d+)$/
+const expPosNum: RegExp = /(\d+\.\d+)$|(\d+)$/
+const expNegNum: RegExp = /(-\d+)$/
+// Pow Expressions
+const expPowStr: RegExp = /((\d+|\d+\.\d+) (□) (\d+))$/
+const expPow: RegExp = /(□ \d+)$/
+// Space Expression
+const expLastSpace: RegExp = /(\s)$/
+// Zero Expression
+const expLastZero: RegExp = /^(0)$|(\s0)$/
 
-function checkInputLength(): boolean { if (inp.value.length >= 17) { return true } }
-function checkLastNum(): boolean { return /(\d+)$/.test(inp.value) }
-function checkSquare(): boolean { if (expSquare.test(inp.value)) { return true } }
-
-
-function checkLastZero(e) {
-    if (expLastZero.test(inp.value)) { return true }
-    inp.value = inp.value + e.target.innerText
+// Zero Function
+function checkLastZero(e, value: string) {
+    if (expLastZero.test(value)) return true
+    inp.value = value + e.target.innerText
 }
 
-function countMemory(sign: string) {
-    if (checkSquare()) {
-        let lastInt = inp.value.match(expAnyLastNumber)
-        console.log(lastInt)
-        if (sign === '+') {memorySum += parseFloat(lastInt[0])}
-        memorySum -= parseFloat(lastInt[0])
+// Memory Functions
+function countingMemory(sign: string, value: string) {
+    if (expAnyLastNumber.test(value)) {
+        const exp: RegExpMatchArray = value.match(expAnyLastNumber)
+        const expNum: number = parseFloat(exp[0])
+        if (sign === '+') {
+            memorySum += expNum
+        } else {
+            memorySum -= expNum
+        }
     }
+}
+
+function saveMemoryHelper(value: string) {
+    const exp: RegExpMatchArray = value.match(expAnyLastNumber)
+    memorySum = parseFloat(exp[0])
+    letterM.style.display = 'block'
+}
+
+// Pow Function
+function countingPow(value: string) {
+    if (expPowStr.test(value)) {
+        const exp: RegExpMatchArray = value.match(expPowStr)
+        inp.value = value.substring(0, value.length - exp[0].length) + Math.pow(parseInt(exp[2]), parseInt(exp[4]))
+    }
+}
+
+// Last Number Operations Function
+function checkResLength(value: string, res: number) {
+    const currentValueLength = inp.value.length
+    const valueLength = value.length
+    if (res.toString().length >= 2) {
+        inp.value = inp.value.substring(0, currentValueLength - valueLength) + res.toFixed(2)
+    } else {
+        inp.value = inp.value.substring(0, currentValueLength - valueLength) + res
+    }
+}
+
+// Keyboard Function
+function checkLastNum(value: string) {
+    if (value.length === 0) return true
+    if (expLastSpace.test(value)) return true
 }
 
 
 // Event Listeners
-
 // Main Operations
-function enteringNumber(e) {
-    checkInputLength()
-    if (e.target.classList.contains('num_btn')) { checkLastZero(e) }
+function enteringNum(e) {
+    if (inp.value.length >= 16) return true
+    if (e.target.classList.contains('num_btn')) checkLastZero(e, inp.value)
 }
 
 function enteringZero(e) {
-    checkInputLength()
-    checkLastZero(e)
+    if (inp.value.length >= 16) return true
+    checkLastZero(e, inp.value)
 }
 
 function enteringDot() {
-    checkInputLength()
-    if (expSquare.test(inp.value)) { return true }
-    if (checkLastNum() && !/(\d+\.\d+)$|(\d+\.)$/.test(inp.value)) { inp.value = inp.value + '.' }
+    if (inp.value.length >= 16) return true
+    if (expPow.test(inp.value)) return true
+    if (expLastNum.test(inp.value) && !/(\d+\.\d+)$|(\d+\.)$/.test(inp.value)) inp.value = inp.value + '.'
 }
 
-cont.onclick = enteringNumber
+cont.onclick = enteringNum
 zero.onclick = enteringZero
 dot.onclick = enteringDot
 
 // Memory Buttons
-function checkMemory() { if (getComputedStyle(letterM).display === 'none') { letterM.style.display = 'block' } }
-
 function clearMemory() {
     memorySum = 0
     letterM.style.display = 'none'
 }
 
 function plusMemory() {
-    checkMemory()
-    countMemory('+')
+    if (expAnyLastNumber.test(inp.value) === true && getComputedStyle(letterM).display === 'none') saveMemoryHelper(inp.value)
+    countingMemory('+', inp.value)
 }
 
 function minusMemory() {
-    checkMemory()
-    countMemory('-')
+    countingMemory('-', inp.value)
 }
 
 function saveMemory() {
-    if (getComputedStyle(letterM).display === 'none' && expAnyLastNumber.test(inp.value)) {
-        let lastInt = inp.value.match(expAnyLastNumber)
-        memorySum = parseFloat(lastInt[0])
-        letterM.style.display = 'block'
-    }
+    if (expAnyLastNumber.test(inp.value)) saveMemoryHelper(inp.value)
 }
 
-function readMemory() { inp.value = memorySum }
+function readMemory() {
+    inp.value = Math.round(memorySum * 100) / 100
+}
 
 mc.onclick = clearMemory
 mr.onclick = readMemory
@@ -118,82 +151,90 @@ mm.onclick = minusMemory
 ms.onclick = saveMemory
 
 // Default Operations
-function checkLastInt(sign) {
-    checkInputLength()
-
-    if (/(\d+)$/.test(inp.value) && inp.value.length > 0) { inp.value = inp.value + ' ' + sign + ' ' }
-
-    if (expSquare.test(inp.value)) {
-        let exp: object = inp.value.match(/((\d+|\d+\.\d+) (□) (\d+))$/)
-        inp.value = inp.value.substring(0, inp.value.length - exp[0].length) + Math.pow(exp[2], exp[4])
-    }
+function enteringSign(sign: string, value: string) {
+    if (inp.value.length >= 16) return true
+    countingPow(value)
+    if (expLastNum.test(value) && value.length > 0) inp.value = inp.value + ' ' + sign + ' '
 }
 
-percent.onclick = () => {checkLastInt('%')}
-pow.onclick = () => {checkLastInt('□')}
-divide.onclick = () => {checkLastInt('÷')}
-multiply.onclick = () => {checkLastInt('×')}
-minus.onclick = () => {checkLastInt('-')}
-plus.onclick = () => {checkLastInt('+')}
+percent.onclick = () => {
+    enteringSign('%', inp.value)
+}
 
+pow.onclick = () => {
+    enteringSign('□', inp.value)
+}
+
+divide.onclick = () => {
+    enteringSign('÷', inp.value)
+}
+
+multiply.onclick = () => {
+    enteringSign('×', inp.value)
+}
+
+minus.onclick = () => {
+    enteringSign('-', inp.value)
+}
+
+plus.onclick = () => {
+    enteringSign('+', inp.value)
+}
 
 // Last Numbers Operations
-function square() {
-    checkInputLength()
-    if (expSquare.test(inp.value)) { return true }
-
-    if (/(\d+\.\d+)$|(\d+)$/.test(inp.value)) {
-        let sq = inp.value.match(/(\d+)$|(\d+\.\d+)$|(-\d+)$|(-\d+\.\d+)$/);
-        if (sq[0] < 0) { return true }
-        let sqIntLength = sq[0].length
-        inp.value = inp.value.substring(0, inp.value.length - sqIntLength) + Math.sqrt(parseFloat(sq[0]))
+function countingSquare() {
+    if (expPosNum.test(inp.value)) {
+        const exp: RegExpMatchArray = inp.value.match(expAnyLastNumber)
+        if (parseInt(exp[0]) < 0) return true
+        const res: number = Math.sqrt(parseFloat(exp[0]))
+        checkResLength(exp[0], res)
     }
 }
 
-function invpropFunc() {
-    checkInputLength()
-    if (expSquare.test(inp.value)) { return true }
-    if (/(\d+\.\d+)$|(\d+)$/.test(inp.val())) {
-        let prop = inp.value.match(/(\d+\.\d+)$|(\d+)$/)
-        let propLength = prop[0].length
-        inp.value = inp.value.substring(0, inp.value.length - propLength) + 1 / prop[0]
+function countingInvprop() {
+    if (expPosNum.test(inp.value)) {
+        const exp: RegExpMatchArray = inp.value.match(expPosNum)
+        const res: number = 1 / parseInt(exp[0])
+        checkResLength(exp[0], res)
     }
 }
 
-function negativeNum() {
-    if (expSquare.test(inp.value)) { return true }
-    if (/(\d+)$|(\d+\.\d+)$/.test(inp.value)) {
-        let lastNum = inp.value.match(/(\d+)$|(\d+\.\d+)$|(-\d+)$|(-\d+\.\d+)$/)
-        if (lastNum[0] > 0) {
-            inp.value = inp.value.substring(0, inp.value.length - lastNum[0].length) + (parseFloat(lastNum[0]) * -1)
-        } else if (lastNum[0] < 0) {
-            inp.value = inp.value.substring(0, inp.val().length - lastNum[0].length) + Math.abs(parseFloat(lastNum[0]))
+function changingSign() {
+    if (expPosNum.test(inp.value)) {
+        const exp: RegExpMatchArray = inp.value.match(expAnyLastNumber)
+        const valueLength = inp.value.length
+        const expLength = exp[0].length
+        if (parseInt(exp[0]) > 0) {
+            inp.value = inp.value.substring(0, valueLength - expLength) + (parseFloat(exp[0]) * -1)
+        } else if (parseInt(exp[0]) < 0) {
+            inp.value = inp.value.substring(0, valueLength - expLength) + Math.abs(parseFloat(exp[0]))
         }
     }
 }
 
-sqrt.onclick = square
-invprop.onclick = invpropFunc
-negative.onclick = negativeNum
+square.onclick = countingSquare
+invprop.onclick = countingInvprop
+changeSign.onclick = changingSign
 
 
-// Clear 0perations
-function clearInp() { inp.value = '' }
+// Clear Operations
+function clearInp() {
+    inp.value = ''
+}
 
 function clearAll() {
     clearInp()
-    if (getComputedStyle(letterM).display === 'block') { clearMemory() }
+    if (getComputedStyle(letterM).display === 'block') clearMemory()
 }
 
 function clearOneSign() {
-    if (/(\s)$/.test(inp.value)) { inp.value = inp.value.substring(0, inp.value.length - 2) }
-
-    if (/(-\d+)$/.test(inp.value)) {
-        const str = inp.value.match(/(-\d+)$/)
-        inp.value = inp.value.substring(0, inp.value.length - str[1].length)
+    const valueLength = inp.value.length
+    if (expLastSpace.test(inp.value)) inp.value = inp.value.substring(0, valueLength - 2)
+    if (expNegNum.test(inp.value)) {
+        const exp: RegExpMatchArray = inp.value.match(expNegNum)
+        inp.value = inp.value.substring(0, valueLength - exp[1].length)
     }
-
-    inp.value = inp.value.substring(0, inp.value.length - 1)
+    inp.value = inp.value.substring(0, valueLength - 1)
 }
 
 ce.onclick = clearInp
@@ -201,149 +242,117 @@ c.onclick = clearAll
 del.onclick = clearOneSign
 
 
-// Equal
-function equalFunc() {
-    if (/(\s)$/.test(inp.value)) { return true }
+// Equal Listener
+function equalListener() {
+    if (expLastSpace.test(inp.value)) return true
+    countingPow(inp.value)
 
-    if (/'□' \d+/.test(inp.value)) {
-        let exp = inp.value.match(/((\d+|\d+\.\d+) (□) (\d+))$/)
-        inp.value = inp.value.substring(0, inp.value.length - exp[0].length) + Math.pow(exp[2], exp[4])
+    const numbers: RegExpMatchArray = inp.value.match(/(\d+\.\d+)|(-\d+\.\d+)|(\d+)|(-\d+)/g)
+    const signs: any = inp.value.match(/[-+%×÷]/g)
+
+    function sortHelper(sign1: string, sign2: string, sign3: string = undefined) {
+
     }
-
-    let numbers = inp.value.match(/(\d+\.\d+)|(-\d+\.\d+)|(\d+)|(-\d+)/g)
-    let signs = inp.value.match(/[-+%×÷]/g)
-
-    function sortHelper(sign1, sign2, sign3 = null) {
-        if (sign3) {
-            if (signs.includes(sign1) && !signs.includes(sign2) || signs.includes(sign1) && signs.indexOf(sign1) < signs.indexOf(sign2) < signs.indexOf(sign3)) {
-                let index = signs.indexOf(sign1);
-                let operationRes: number = 0;
-
-                if (sign1 === '+') {
-                    operationRes = parseFloat(numbers[index]) + parseFloat(numbers[index + 1])
-                }
-                if (sign1 === '-') {
-                    operationRes = parseFloat(numbers[index]) - parseFloat(numbers[index + 1])
-                }
-                if (sign1 === '%') {
-                    operationRes = parseFloat(numbers[index]) / 100 * parseFloat(numbers[index + 1])
-                }
-
-                numbers.splice(index, 2);
-                signs.splice(index, 1);
-                numbers.splice(index, 0, operationRes)
-                return true;
-            }
-        }
-
-        if (signs.includes(sign1) && !signs.includes(sign2) || signs.includes(sign1) && signs.indexOf(sign1) < signs.indexOf(sign2)) {
-            let index = signs.indexOf(sign1);
-            let operationRes = 0;
-
-            if (sign1 === '×') {
-                operationRes = parseFloat(numbers[index]) * parseFloat(numbers[index + 1])
-            }
-            if (sign1 === '÷') {
-                operationRes = parseFloat(numbers[index]) / parseFloat(numbers[index + 1])
-            }
-
-            numbers.splice(index, 2);
-            signs.splice(index, 1);
-            numbers.splice(index, 0, operationRes)
-        }
-    }
-
-    function sort() {
-        for (let i = 0; i <= signs.length; i++) {
-            sortHelper('×', '÷');
-            sortHelper('÷', '×');
-            sortHelper('+', '-', '%');
-            sortHelper('-', '+', '%');
-            sortHelper('%', '+', '-');
-        }
-    }
-
-    sort();
-    inp.value = Math.floor(numbers[0])
 }
 
-equal.onclick = equalFunc
 
 
-// Keyboard code
-// function twoKeys(sign) {
-//     if (inp.val().length === 0) {
-//         return true
-//     }
-//     if (/(\s)$/.test(inp.val())) {
-//         return true
-//     }
+// function sortHelper(sign1: string, sign2: string, sign3: string = undefined) {
+//     if (sign3) {
+//         if (signs.includes(sign1) && !signs.includes(sign2) || signs.includes(sign1) && signs.indexOf(sign1) < signs.indexOf(sign2) < signs.indexOf(sign3)) {
+//             const index: number = signs.indexOf(sign1)
+//             let operationRes: number = 0
 //
-//     if (pressed.includes('Shift') && pressed.includes('+') || pressed.includes('%') || pressed.includes('*')) {
-//         inp.val(inp.val() + ' ' + sign + ' ');
-//     }
-// }
+//             if (sign1 === '+') {
+//                 operationRes = parseFloat(numbers[index]) + parseFloat(numbers[index + 1])
+//             }
+//             if (sign1 === '-') {
+//                 operationRes = parseFloat(numbers[index]) - parseFloat(numbers[index + 1])
+//             }
+//             if (sign1 === '%') {
+//                 operationRes = parseFloat(numbers[index]) / 100 * parseFloat(numbers[index + 1])
+//             }
 //
-// function minusDivide(sign, e) {
-//     if (e.key === '-' || e.key === '/') {
-//         if (inp.val().length === 0) {
+//             numbers.splice(index, 2)
+//             signs.splice(index, 1)
+//             numbers.splice(index, 0, operationRes.toString())
 //             return true
 //         }
-//         if (/(\s)$/.test(inp.val())) {
-//             return true
+//     }
+//     if (signs.includes(sign1) && !signs.includes(sign2) || signs.includes(sign1) && signs.indexOf(sign1) < signs.indexOf(sign2)) {
+//         const index: number = signs.indexOf(sign1)
+//         let operationRes: number = 0
+//
+//         if (sign1 === '×') {
+//             operationRes = parseFloat(numbers[index]) * parseFloat(numbers[index + 1])
 //         }
-//         inp.val(inp.val() + ' ' + sign + ' ')
-//     }
-// }
-//
-// let pressed = [];
-//
-// function checkLengthArr() {
-//     if (pressed.length > 0) {
-//         pressed.length = pressed.length - 1
-//     }
-// }
-//
-// function keyDown(e) {
-//     if (e.key === 'Backspace') {
-//         clearOneSign()
-//     }
-//     if (inp.val().length >= 17) {
-//         return true
-//     }
-//     if (!pressed.includes(e.key)) {
-//         pressed.push(e.key);
-//     }
-//
-//     if (e.key === '0' || e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4' || e.key === '5' || e.key === '6' || e.key === '7' || e.key === '8' || e.key === '9') {
-//         if (/^(0)$|(\s0)$/.test(inp.val())) {
-//             return true
+//         if (sign1 === '÷') {
+//             operationRes = parseFloat(numbers[index]) / parseFloat(numbers[index + 1])
 //         }
-//         inp.val(inp.val() + e.key)
-//     }
 //
-//     if (e.key === '-') {
-//         minusDivide('-', e)
-//     }
-//     if (e.key === '/') {
-//         minusDivide('÷', e)
-//     }
-//     if (e.key === '+') {
-//         twoKeys('+')
-//     }
-//     if (e.key === '%') {
-//         twoKeys('%')
-//     }
-//     if (e.key === '*') {
-//         twoKeys('×')
-//     }
-//     if (e.key === '=') {
-//         equal()
-//     }
-//     if (e.key === '.') {
-//         dot()
+//
+//         numbers.splice(index, 2)
+//         signs.splice(index, 1)
+//         numbers.splice(index, 0, operationRes.toString())
 //     }
 // }
 //
-// document.onkeydown = keyDown
-// document.onkeyup = checkLengthArr
+// function sort() {
+//     for (let i = 0; i <= signs.length; i++) {
+//         sortHelper('×', '÷')
+//         sortHelper('÷', '×')
+//         sortHelper('+', '-', '%')
+//         sortHelper('-', '+', '%')
+//         sortHelper('%', '+', '-')
+//     }
+// }
+//
+//
+// sort()
+// inp.value = parseFloat(numbers[0])
+
+
+equal.onclick = equalListener
+
+
+// Keyboard
+let pressed: any = []
+
+function twoKeys(sign: string, value: string) {
+    if (checkLastNum(value)) return true
+    if (pressed.includes('Shift') && pressed.includes('+') || pressed.includes('%') || pressed.includes('*')) inp.value = value + ' ' + sign + ' '
+}
+
+function minusDivide(e, sign: string, value: string) {
+    if (e.key === '-' || e.key === '/') {
+        if (checkLastNum(value)) return true
+        inp.value = value + ' ' + sign + ' '
+    }
+}
+
+function checkLengthArr() {
+    const pressedLength = pressed.length
+    if (pressedLength > 0) pressed.length = pressedLength - 1
+}
+
+function keyDown(e) {
+    if (inp.value.length >= 16) return true
+    if (e.key === 'Backspace') clearOneSign()
+    if (!pressed.includes(e.key)) pressed.push(e.key);
+
+    if (e.key === '0' || e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4' || e.key === '5' || e.key === '6' || e.key === '7' || e.key === '8' || e.key === '9') {
+        if (expLastZero.test(inp.value)) return true
+        inp.value = inp.value + e.key
+    }
+
+    if (e.key === '-') minusDivide(e, '-', inp.value)
+    if (e.key === '/') minusDivide(e, '÷', inp.value)
+    if (e.key === '+') twoKeys('+', inp.value)
+    if (e.key === '%') twoKeys('%', inp.value)
+    if (e.key === '*') twoKeys('×', inp.value)
+    if (e.key === '=' || e.key === 'Enter') equalListener()
+    if (e.key === '.') dot()
+}
+
+document.onkeydown = keyDown
+document.onkeyup = checkLengthArr

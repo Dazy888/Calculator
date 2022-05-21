@@ -2,7 +2,7 @@
 * {
   margin: 0;
   padding: 0;
-  font-family: 'Anybody';
+  font-family: 'Anybody', sans-serif;
 }
 
 .let_m {
@@ -59,7 +59,7 @@ body {
       border-radius: 5px;
       border: 5px solid purple;
       text-align: right;
-      font-family: 'Anybody';
+
       font-size: 50px;
 
       &:focus-visible {
@@ -74,7 +74,6 @@ body {
         width: 85px;
         height: 85px;
         background: transparent;
-        font-family: 'Anybody';
         margin-right: 25px;
         border-radius: 50%;
         border: 3px solid white;
@@ -108,6 +107,7 @@ body {
         background: transparent;
         border: 3px solid white;
         transition: 0.3s;
+
         color: white;
 
         &:hover {
@@ -164,8 +164,6 @@ body {
     .memory__btn {
       width: 55px !important;
       height: 55px !important;
-      margin-right: 15px !important;
-      font-size: 25px !important;
     }
   }
 
@@ -207,7 +205,6 @@ body {
     .controls__btn {
       width: 60px !important;
       height: 40px !important;
-      font-size: 20px !important;
     }
   }
 }
