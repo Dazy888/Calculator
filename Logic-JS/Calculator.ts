@@ -229,7 +229,7 @@ function clearAll() {
 
 function clearOneSign() {
     const valueLength = inp.value.length
-    if (expLastSpace.test(inp.value)) inp.value = inp.value.substring(0, valueLength - 2)
+    if (expLastSpace.test(inp.value)) inp.value = inp.value.substring(0, valueLength - 3)
     if (expNegNum.test(inp.value)) {
         const exp: RegExpMatchArray = inp.value.match(expNegNum)
         inp.value = inp.value.substring(0, valueLength - exp[1].length)
@@ -324,10 +324,8 @@ function twoKeys(sign: string, value: string) {
 }
 
 function minusDivide(e, sign: string, value: string) {
-    if (e.key === '-' || e.key === '/') {
-        if (checkLastNum(value)) return true
-        inp.value = value + ' ' + sign + ' '
-    }
+    if (checkLastNum(value)) return true
+    inp.value = value + ' ' + sign + ' '
 }
 
 function checkLengthArr() {
@@ -336,8 +334,8 @@ function checkLengthArr() {
 }
 
 function keyDown(e) {
-    if (inp.value.length >= 16) return true
     if (e.key === 'Backspace') clearOneSign()
+    if (inp.value.length >= 16) return true
     if (!pressed.includes(e.key)) pressed.push(e.key);
 
     if (e.key === '0' || e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4' || e.key === '5' || e.key === '6' || e.key === '7' || e.key === '8' || e.key === '9') {
@@ -345,8 +343,11 @@ function keyDown(e) {
         inp.value = inp.value + e.key
     }
 
+    if (e.key === '+') minusDivide(e, '%', inp.value)
+    if (e.key === '+') minusDivide(e, '*', inp.value)
+    if (e.key === '+') minusDivide(e, '+', inp.value)
     if (e.key === '-') minusDivide(e, '-', inp.value)
-    if (e.key === '/') minusDivide(e, '÷', inp.value)
+    if (e.key === '/') minusDivide(e, '/', inp.value)
     if (e.key === '+') twoKeys('+', inp.value)
     if (e.key === '%') twoKeys('%', inp.value)
     if (e.key === '*') twoKeys('×', inp.value)
