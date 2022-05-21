@@ -9,7 +9,7 @@
   display: none;
   position: absolute;
   top: 60px;
-  left: 65px;
+  left: 45px;
 
   color: black;
   font-size: 40px;
@@ -119,7 +119,7 @@ body {
         }
 
         &:hover {
-          transform: scale(1.2) translate(20px,-20px);
+          transform: scale(1.2) translate(20px, -20px);
           box-shadow: -5px 10px 25px purple;
         }
       }
@@ -138,10 +138,19 @@ body {
 }
 
 @media screen and (max-width: 620px) {
+  .let_m {
+    top: 40px;
+    left: 40px;
+    font-size: 30px;
+  }
+
   .input {
+    margin-bottom: 40px !important;
+
     .result_inp {
-      width: 300px !important;
-      height: 80px !important;
+      width: 340px !important;
+      height: 70px !important;
+      font-size: 33px !important;
     }
   }
 
@@ -168,6 +177,23 @@ body {
 }
 
 @media screen and (max-width: 490px) {
+  .let_m {
+    top: 35px;
+    left: 30px;
+    font-size: 25px;
+  }
+
+  .input {
+    margin-bottom: 30px !important;
+
+    .result_inp {
+      width: 320px !important;
+      height: 60px !important;
+      font-size: 31px !important;
+      margin-bottom: 30px !important;
+    }
+  }
+
   .memory {
     .memory__btn {
       width: 55px !important;
@@ -189,10 +215,17 @@ body {
 }
 
 @media screen and (max-width: 400px) {
+  .let_m {
+    top: 40px;
+    left: 25px;
+    font-size: 21px;
+  }
+
   .input {
     .result_inp {
       width: 270px !important;
-      height: 70px !important;
+      height: 60px !important;
+      font-size: 27px !important;
     }
   }
 
