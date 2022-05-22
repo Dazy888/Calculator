@@ -2,7 +2,6 @@
 // Main
 const inp: any = document.querySelector('input')
 const cont: any = document.querySelector('.container')
-const zero: any = document.querySelector('.zero')
 
 // Memory
 const mc: any = document.querySelector('.mc')
@@ -49,9 +48,12 @@ const expLastSpace: RegExp = /(\s)$/
 const expLastZero: RegExp = /^(0)$|(\s0)$/
 
 // Zero Function
-function checkLastZero(e, value: string) {
-    if (expLastZero.test(value)) return true
-    inp.value = value + e.target.innerText
+function checkLastZero(e, value: string, key: string) {
+    if (expLastZero.test(value)) {
+        inp.value = inp.value.substring(0, value.length - 1) + key
+    } else {
+        inp.value = value + key
+    }
 }
 
 // Memory Functions
@@ -117,23 +119,15 @@ function sortEqualArrays(signs: RegExpMatchArray, numbers: RegExpMatchArray, sig
 // Event Listeners
 // Main Operations
 function enteringNum(e) {
-    if (inp.value.length >= 16) return true
-    if (e.target.classList.contains('num_btn')) checkLastZero(e, inp.value)
-}
-
-function enteringZero(e) {
-    if (inp.value.length >= 16) return true
-    checkLastZero(e, inp.value)
+    if (e.target.classList.contains('num_btn')) checkLastZero(e, inp.value, e.target.innerText)
 }
 
 function enteringDot() {
-    if (inp.value.length >= 16) return true
     if (expPow.test(inp.value)) return true
     if (expLastNum.test(inp.value) && !/(\d+\.\d+)$|(\d+\.)$/.test(inp.value)) inp.value = inp.value + '.'
 }
 
 cont.onclick = enteringNum
-zero.onclick = enteringZero
 dot.onclick = enteringDot
 
 // Memory Buttons
@@ -167,8 +161,6 @@ ms.onclick = saveMemory
 
 // Default Operations
 function enteringSign(e, sign: string = null) {
-    if (inp.value.length >= 16) return true
-    countingPow(inp.value)
     if (expLastNum.test(inp.value) && inp.value.length > 0) {
         if (sign) {
             inp.value = inp.value + ' ' + sign + ' '
@@ -257,6 +249,7 @@ function equalListener() {
     const signs: any = inp.value.match(/[-+%×/]/g)
 
     function sortHelper() {
+        console.log(true)
         if (signs.includes('×') && !signs.includes('/') || signs.includes('×') && signs.indexOf('×') < signs.indexOf('/')) return sortEqualArrays(signs, numbers, '×')
         if (signs.includes('/') && !signs.includes('×') || signs.includes('/') && signs.indexOf('/') < signs.indexOf('×')) return sortEqualArrays(signs, numbers, '/')
         if (signs.includes('+') && !signs.includes('-') || signs.includes('+') && signs.indexOf('+') < signs.indexOf('-')) return sortEqualArrays(signs, numbers, '+')
@@ -264,7 +257,7 @@ function equalListener() {
     }
 
     function sort() {
-        for (let i = 0; i <= signs.length + 1; i++) {
+        for (let i = 0; i <= signs.length + 5; i++) {
             sortHelper()
         }
     }
@@ -296,12 +289,10 @@ function checkLengthArr() {
 
 function keyDown(e) {
     if (e.key === 'Backspace') clearOneSign()
-    if (inp.value.length >= 16) return true
     if (!pressed.includes(e.key)) pressed.push(e.key);
 
     if (e.key === '0' || e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4' || e.key === '5' || e.key === '6' || e.key === '7' || e.key === '8' || e.key === '9') {
-        if (expLastZero.test(inp.value)) return true
-        inp.value = inp.value + e.key
+        checkLastZero(e, inp.value, e.key)
     }
 
     if (e.key === '*') minusDivide(null, '×', inp.value)
@@ -312,7 +303,7 @@ function keyDown(e) {
     if (e.key === '%') twoKeys('%', inp.value)
     if (e.key === '*') twoKeys('×', inp.value)
     if (e.key === '=' || e.key === 'Enter') equalListener()
-    if (e.key === '.') dot()
+    if (e.key === '.') enteringDot()
 }
 
 document.onkeydown = keyDown
