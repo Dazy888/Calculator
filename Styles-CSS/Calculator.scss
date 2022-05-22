@@ -113,9 +113,8 @@ body {
 
         color: white;
 
-        .multiply_icon {
+        span {
           font-size: 100px;
-          height: 25px;
         }
 
         &:hover {
@@ -188,7 +187,6 @@ body {
 
     .result_inp {
       width: 320px !important;
-      height: 60px !important;
       font-size: 31px !important;
       margin-bottom: 30px !important;
     }
