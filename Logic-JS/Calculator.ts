@@ -21,6 +21,7 @@ const plus: any = document.querySelector('.plus')
 const divide: any = document.querySelector('.divide')
 const dot: any = document.querySelector('.dot-btn')
 const equal: any = document.querySelector('.equal')
+let isResult: boolean = false
 
 // Last Number Operations
 const square: any = document.querySelector('.sqrt')
@@ -99,6 +100,10 @@ function checkResLength(valueLength: number, res: number) {
     const currentValueLength: number = inp.value.length
     res < 1 ? inp.value = inp.value.substring(0, currentValueLength - valueLength) + res.toFixed(3) : inp.value = inp.value.substring(0, currentValueLength - valueLength) + Math.round(res)
 }
+function defaultChecks(value: string): boolean {
+    if (expLastPow.test(value)) return true
+    if (isResult) return true
+}
 
 // Keyboard Function
 function checkLastNum(value: string): boolean {
@@ -127,11 +132,12 @@ function sortEqualArrays(signs: RegExpMatchArray, numbers: RegExpMatchArray, sig
 // Main Operations
 function enteringNum(e) {
     if (checkInpLength(inp.value)) return
+    if (isResult) return
     if (e.target.classList.contains('num_btn')) checkLastZero(inp.value, e.target.innerText)
 }
 
 function enteringDot() {
-    if (expLastPow.test(inp.value)) return
+    if (defaultChecks(inp.value)) return
     if (expLastNum.test(inp.value) && !/(\d+\.\d+)$|(\d+\.)$/.test(inp.value)) inp.value = inp.value + '.'
 }
 
@@ -189,7 +195,7 @@ multiply.onclick = () => {
 
 // Last Numbers Operations
 function countingSquare() {
-    if (expLastPow.test(inp.value)) return
+    if (defaultChecks(inp.value)) return
     if (expPosNum.test(inp.value)) {
         const exp: RegExpMatchArray = inp.value.match(expAnyLastNumber)
         if (parseInt(exp[0]) < 0) return
@@ -198,7 +204,7 @@ function countingSquare() {
 }
 
 function countingInvprop() {
-    if (expLastPow.test(inp.value)) return
+    if (defaultChecks(inp.value)) return
     if (expPosNum.test(inp.value)) {
         const exp: RegExpMatchArray = inp.value.match(expPosNum)
         checkResLength(exp[0].length, 1 / parseFloat(exp[0]))
@@ -206,7 +212,7 @@ function countingInvprop() {
 }
 
 function changingSign() {
-    if (expLastPow.test(inp.value)) return
+    if (defaultChecks(inp.value)) return
     if (expPosNum.test(inp.value)) {
         const exp: RegExpMatchArray = inp.value.match(expAnyLastNumber)
         const valueLength: number = inp.value.length
@@ -238,12 +244,17 @@ function clearAll() {
 
 function clearOneSign() {
     const valueLength: number = inp.value.length
-    if (expLastSpace.test(inp.value)) inp.value = inp.value.substring(0, valueLength - 3)
-    if (expNegNum.test(inp.value)) {
+    if (isResult) {
+        clearInp()
+        isResult = false
+    } else if (expLastSpace.test(inp.value)) {
+        inp.value = inp.value.substring(0, valueLength - 3)
+    } else if (expNegNum.test(inp.value)) {
         const exp: RegExpMatchArray = inp.value.match(expNegNum)
         inp.value = inp.value.substring(0, valueLength - exp[1].length)
+    } else {
+        inp.value = inp.value.substring(0, valueLength - 1)
     }
-    inp.value = inp.value.substring(0, valueLength - 1)
 }
 
 ce.onclick = clearInp
@@ -253,7 +264,7 @@ del.onclick = clearOneSign
 
 // Equal Listener
 function equalListener() {
-    if (expLastSpace.test(inp.value)) return
+    if (inp.value.length === 0 || /^(\d+)$/.test(inp.value) || expLastSpace.test(inp.value)) return
     if (/^((\d+|\d+\.\d+) (□) (\d+))$/.test(inp.value)) {
         countingPow(inp.value, true)
         return
@@ -281,6 +292,7 @@ function equalListener() {
     setTimeout(() => {
         inp.value = numbers[0]
     }, 10)
+    isResult = true
 }
 
 equal.onclick = equalListener
@@ -307,15 +319,17 @@ function checkLengthArr() {
 function keyDown(e) {
     if (e.key === 'Backspace') clearOneSign()
     if (e.key === '=' || e.key === 'Enter') {
-        if (/^(\d+)$/.test(inp.value)) return
-        if (checkLastNum(inp.value)) return
+        if (/^(\d+)$/.test(inp.value) || checkLastNum(inp.value)) return
         equalListener()
     }
 
     if (checkInpLength(inp.value)) return
     if (!pressed.includes(e.key)) pressed.push(e.key)
 
-    if (e.key === '0' || e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4' || e.key === '5' || e.key === '6' || e.key === '7' || e.key === '8' || e.key === '9') checkLastZero(inp.value, e.key)
+    if (e.key === '0' || e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4' || e.key === '5' || e.key === '6' || e.key === '7' || e.key === '8' || e.key === '9') {
+        if (isResult) return
+        checkLastZero(inp.value, e.key)
+    }
 
     if (checkLastNum(inp.value)) return
 
