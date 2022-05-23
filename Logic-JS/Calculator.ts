@@ -168,7 +168,7 @@ mm.onclick = minusMemory
 ms.onclick = saveMemory
 
 // Default Operations
-function enteringSign(sign: string = null, e = null) {
+function enteringSign(e = null, sign: string = null) {
     if (checkInpLength(inp.value)) return
     if (expLastNum.test(inp.value) && inp.value.length > 0) {
         countingPow(inp.value)
@@ -181,10 +181,10 @@ divide.onclick = enteringSign
 minus.onclick = enteringSign
 plus.onclick = enteringSign
 pow.onclick = () => {
-    enteringSign('□')
+    enteringSign( null, '□',)
 }
 multiply.onclick = () => {
-    enteringSign('×')
+    enteringSign(null, '×')
 }
 
 // Last Numbers Operations
@@ -290,13 +290,11 @@ equal.onclick = equalListener
 let pressed: any = []
 
 function twoKeys(sign: string, value: string) {
-    if (checkLastNum(value)) return
     countingPow(inp.value)
     if (pressed.includes('Shift') && pressed.includes('+') || pressed.includes('%') || pressed.includes('*')) inp.value = value + ' ' + sign + ' '
 }
 
-function oneKey(e, sign: string, value: string) {
-    if (checkLastNum(value)) return
+function oneKey(sign: string, value: string) {
     countingPow(value)
     inp.value = inp.value + ' ' + sign + ' '
 }
@@ -313,15 +311,18 @@ function keyDown(e) {
         if (checkLastNum(inp.value)) return
         equalListener()
     }
+
     if (checkInpLength(inp.value)) return
     if (!pressed.includes(e.key)) pressed.push(e.key)
 
     if (e.key === '0' || e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4' || e.key === '5' || e.key === '6' || e.key === '7' || e.key === '8' || e.key === '9') checkLastZero(inp.value, e.key)
 
-    if (e.key === '*') oneKey(null, '×', inp.value)
-    if (e.key === '+') oneKey(null, '+', inp.value)
-    if (e.key === '-') oneKey(null, '-', inp.value)
-    if (e.key === '/') oneKey(null, '/', inp.value)
+    if (checkLastNum(inp.value)) return
+
+    if (e.key === '*') oneKey('×', inp.value)
+    if (e.key === '+') oneKey('+', inp.value)
+    if (e.key === '-') oneKey('-', inp.value)
+    if (e.key === '/') oneKey('/', inp.value)
     if (e.key === '+') twoKeys('+', inp.value)
     if (e.key === '%') twoKeys('%', inp.value)
     if (e.key === '*') twoKeys('×', inp.value)
