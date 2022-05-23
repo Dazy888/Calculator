@@ -39,20 +39,42 @@ const expAnyLastNumber: RegExp = /(\d+)$|(\d+\.\d+)$|(-\d+)$|(-\d+\.\d+)$/
 const expLastNum: RegExp = /(\d+)$/
 const expPosNum: RegExp = /(\d+\.\d+)$|(\d+)$/
 const expNegNum: RegExp = /(-\d+)$/
-// Pow Expressions
-const expPowStr: RegExp = /((\d+|\d+\.\d+) (□) (\d+))$/
-const expPow: RegExp = /(□ \d+)$/
+// Pow Expression
+const expLastPow: RegExp = /(□ \d+)$/
 // Space Expression
 const expLastSpace: RegExp = /(\s)$/
 // Zero Expression
 const expLastZero: RegExp = /^(0)$|(\s0)$/
 
+
 // Zero Function
-function checkLastZero(e, value: string, key: string) {
-    if (expLastZero.test(value)) {
-        inp.value = inp.value.substring(0, value.length - 1) + key
-    } else {
-        inp.value = value + key
+function checkLastZero(value: string, key: string) {
+    expLastZero.test(value) ? inp.value = inp.value.substring(0, value.length - 1) + key : inp.value = value + key
+}
+
+// Check Input Length Function
+function checkInpLength(value: string): boolean {
+    const numbers = value.match(/\d+/g)
+    let numbersSum = 0
+    if (numbers) {
+        for (const number of numbers) {
+            numbersSum += number.length
+        }
+        if (numbersSum >= 10) return true
+    }
+}
+
+// Pow Function
+function countingPow(value: string, delay: boolean = null) {
+    if (expLastPow.test(value)) {
+        const exp: RegExpMatchArray = value.match(/((\d+|\d+\.\d+) (□) (\d+))$/)
+        if (delay) {
+            setTimeout(() => {
+                inp.value = value.substring(0, value.length - exp[0].length) + Math.pow(parseFloat(exp[2]), parseInt(exp[4]))
+            }, 10)
+        } else {
+            inp.value = value.substring(0, value.length - exp[0].length) + Math.pow(parseFloat(exp[2]), parseInt(exp[4]))
+        }
     }
 }
 
@@ -61,41 +83,25 @@ function countingMemory(sign: string, value: string) {
     if (expAnyLastNumber.test(value)) {
         const exp: RegExpMatchArray = value.match(expAnyLastNumber)
         const expNum: number = parseFloat(exp[0])
-        if (sign === '+') {
-            memorySum += expNum
-        } else {
-            memorySum -= expNum
-        }
+        sign === '+' ? memorySum += expNum : memorySum -= expNum
     }
 }
 
 function saveMemoryHelper(value: string) {
+    if (value.length >= 15) return
     const exp: RegExpMatchArray = value.match(expAnyLastNumber)
     memorySum = parseFloat(exp[0])
     letterM.style.display = 'block'
 }
 
-// Pow Function
-function countingPow(value: string) {
-    if (expPowStr.test(value)) {
-        const exp: RegExpMatchArray = value.match(expPowStr)
-        inp.value = value.substring(0, value.length - exp[0].length) + Math.pow(parseInt(exp[2]), parseInt(exp[4]))
-    }
-}
-
 // Last Number Operations Function
-function checkResLength(value: string, res: number) {
-    const currentValueLength = inp.value.length
-    const valueLength = value.length
-    if (res.toString().length >= 2) {
-        inp.value = inp.value.substring(0, currentValueLength - valueLength) + res.toFixed(2)
-    } else {
-        inp.value = inp.value.substring(0, currentValueLength - valueLength) + res
-    }
+function checkResLength(valueLength: number, res: number) {
+    const currentValueLength: number = inp.value.length
+    res < 1 ? inp.value = inp.value.substring(0, currentValueLength - valueLength) + res.toFixed(3) : inp.value = inp.value.substring(0, currentValueLength - valueLength) + Math.round(res)
 }
 
 // Keyboard Function
-function checkLastNum(value: string) {
+function checkLastNum(value: string): boolean {
     if (value.length === 0) return true
     if (expLastSpace.test(value)) return true
 }
@@ -107,6 +113,7 @@ function sortEqualArrays(signs: RegExpMatchArray, numbers: RegExpMatchArray, sig
 
     if (sign === '×') operationRes = parseFloat(numbers[index]) * parseFloat(numbers[index + 1])
     if (sign === '/') operationRes = parseFloat(numbers[index]) / parseFloat(numbers[index + 1])
+    if (sign === '%') operationRes = parseFloat(numbers[index]) / 100 * parseFloat(numbers[index + 1])
     if (sign === '+') operationRes = parseFloat(numbers[index]) + parseFloat(numbers[index + 1])
     if (sign === '-') operationRes = parseFloat(numbers[index]) - parseFloat(numbers[index + 1])
 
@@ -119,11 +126,12 @@ function sortEqualArrays(signs: RegExpMatchArray, numbers: RegExpMatchArray, sig
 // Event Listeners
 // Main Operations
 function enteringNum(e) {
-    if (e.target.classList.contains('num_btn')) checkLastZero(e, inp.value, e.target.innerText)
+    if (checkInpLength(inp.value)) return
+    if (e.target.classList.contains('num_btn')) checkLastZero(inp.value, e.target.innerText)
 }
 
 function enteringDot() {
-    if (expPow.test(inp.value)) return true
+    if (expLastPow.test(inp.value)) return
     if (expLastNum.test(inp.value) && !/(\d+\.\d+)$|(\d+\.)$/.test(inp.value)) inp.value = inp.value + '.'
 }
 
@@ -137,7 +145,7 @@ function clearMemory() {
 }
 
 function plusMemory() {
-    if (expAnyLastNumber.test(inp.value) === true && getComputedStyle(letterM).display === 'none') saveMemoryHelper(inp.value)
+    if (expAnyLastNumber.test(inp.value) && getComputedStyle(letterM).display === 'none') saveMemoryHelper(inp.value)
     countingMemory('+', inp.value)
 }
 
@@ -150,7 +158,7 @@ function saveMemory() {
 }
 
 function readMemory() {
-    inp.value = Math.round(memorySum * 100) / 100
+    inp.value = memorySum.toString().substring(0, 15)
 }
 
 mc.onclick = clearMemory
@@ -160,52 +168,55 @@ mm.onclick = minusMemory
 ms.onclick = saveMemory
 
 // Default Operations
-function enteringSign(e, sign: string = null) {
+function enteringSign(sign: string = null, e = null) {
+    if (checkInpLength(inp.value)) return
     if (expLastNum.test(inp.value) && inp.value.length > 0) {
-        if (sign) {
-            inp.value = inp.value + ' ' + sign + ' '
-        } else {
-            inp.value = inp.value + ' ' + e.target.innerText + ' '
-        }
+        countingPow(inp.value)
+        sign ? inp.value = inp.value + ' ' + sign + ' ' : inp.value = inp.value + ' ' + e.target.innerText + ' '
     }
 }
 
 percent.onclick = enteringSign
-pow.onclick = enteringSign
 divide.onclick = enteringSign
-multiply.onclick = () => {
-    enteringSign(null, '×')
-}
 minus.onclick = enteringSign
 plus.onclick = enteringSign
+pow.onclick = () => {
+    enteringSign('□')
+}
+multiply.onclick = () => {
+    enteringSign('×')
+}
 
 // Last Numbers Operations
 function countingSquare() {
+    if (expLastPow.test(inp.value)) return
     if (expPosNum.test(inp.value)) {
         const exp: RegExpMatchArray = inp.value.match(expAnyLastNumber)
-        if (parseInt(exp[0]) < 0) return true
-        const res: number = Math.sqrt(parseFloat(exp[0]))
-        checkResLength(exp[0], res)
+        if (parseInt(exp[0]) < 0) return
+        checkResLength(exp[0].length, Math.sqrt(parseFloat(exp[0])))
     }
 }
 
 function countingInvprop() {
+    if (expLastPow.test(inp.value)) return
     if (expPosNum.test(inp.value)) {
         const exp: RegExpMatchArray = inp.value.match(expPosNum)
-        const res: number = 1 / parseInt(exp[0])
-        checkResLength(exp[0], res)
+        checkResLength(exp[0].length, 1 / parseFloat(exp[0]))
     }
 }
 
 function changingSign() {
+    if (expLastPow.test(inp.value)) return
     if (expPosNum.test(inp.value)) {
         const exp: RegExpMatchArray = inp.value.match(expAnyLastNumber)
-        const valueLength = inp.value.length
-        const expLength = exp[0].length
-        if (parseInt(exp[0]) > 0) {
-            inp.value = inp.value.substring(0, valueLength - expLength) + (parseFloat(exp[0]) * -1)
-        } else if (parseInt(exp[0]) < 0) {
-            inp.value = inp.value.substring(0, valueLength - expLength) + Math.abs(parseFloat(exp[0]))
+        const valueLength: number = inp.value.length
+        const expLength: number = exp[0].length
+        const res: number = parseFloat(exp[0])
+
+        if (parseFloat(exp[0]) > 0) {
+            inp.value = inp.value.substring(0, valueLength - expLength) + (res * -1)
+        } else if (parseFloat(exp[0]) < 0) {
+            inp.value = inp.value.substring(0, valueLength - expLength) + Math.abs(res)
         }
     }
 }
@@ -226,7 +237,7 @@ function clearAll() {
 }
 
 function clearOneSign() {
-    const valueLength = inp.value.length
+    const valueLength: number = inp.value.length
     if (expLastSpace.test(inp.value)) inp.value = inp.value.substring(0, valueLength - 3)
     if (expNegNum.test(inp.value)) {
         const exp: RegExpMatchArray = inp.value.match(expNegNum)
@@ -242,28 +253,34 @@ del.onclick = clearOneSign
 
 // Equal Listener
 function equalListener() {
-    if (expLastSpace.test(inp.value)) return true
+    if (expLastSpace.test(inp.value)) return
+    if (/^((\d+|\d+\.\d+) (□) (\d+))$/.test(inp.value)) {
+        countingPow(inp.value, true)
+        return
+    }
     countingPow(inp.value)
 
     const numbers: RegExpMatchArray = inp.value.match(/(\d+\.\d+)|(-\d+\.\d+)|(\d+)|(-\d+)/g)
     const signs: any = inp.value.match(/[-+%×/]/g)
 
     function sortHelper() {
-        console.log(true)
         if (signs.includes('×') && !signs.includes('/') || signs.includes('×') && signs.indexOf('×') < signs.indexOf('/')) return sortEqualArrays(signs, numbers, '×')
         if (signs.includes('/') && !signs.includes('×') || signs.includes('/') && signs.indexOf('/') < signs.indexOf('×')) return sortEqualArrays(signs, numbers, '/')
+        if (signs.includes('%') && !signs.includes('×') && !signs.includes('/') || signs.includes('%') && signs.indexOf('%') < signs.indexOf('×') && signs.indexOf('/')) return sortEqualArrays(signs, numbers, '%')
         if (signs.includes('+') && !signs.includes('-') || signs.includes('+') && signs.indexOf('+') < signs.indexOf('-')) return sortEqualArrays(signs, numbers, '+')
         if (signs.includes('-') && !signs.includes('+') || signs.includes('-') && signs.indexOf('-') < signs.indexOf('+')) return sortEqualArrays(signs, numbers, '-')
     }
 
     function sort() {
-        for (let i = 0; i <= signs.length + 5; i++) {
+        for (let i = 0; i <= signs.length + 6; i++) {
             sortHelper()
         }
     }
 
     sort()
-    inp.value = parseFloat(numbers[0])
+    setTimeout(() => {
+        inp.value = numbers[0]
+    }, 10)
 }
 
 equal.onclick = equalListener
@@ -273,13 +290,15 @@ equal.onclick = equalListener
 let pressed: any = []
 
 function twoKeys(sign: string, value: string) {
-    if (checkLastNum(value)) return true
+    if (checkLastNum(value)) return
+    countingPow(inp.value)
     if (pressed.includes('Shift') && pressed.includes('+') || pressed.includes('%') || pressed.includes('*')) inp.value = value + ' ' + sign + ' '
 }
 
-function minusDivide(e, sign: string, value: string) {
-    if (checkLastNum(value)) return true
-    inp.value = value + ' ' + sign + ' '
+function oneKey(e, sign: string, value: string) {
+    if (checkLastNum(value)) return
+    countingPow(value)
+    inp.value = inp.value + ' ' + sign + ' '
 }
 
 function checkLengthArr() {
@@ -289,20 +308,23 @@ function checkLengthArr() {
 
 function keyDown(e) {
     if (e.key === 'Backspace') clearOneSign()
-    if (!pressed.includes(e.key)) pressed.push(e.key);
-
-    if (e.key === '0' || e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4' || e.key === '5' || e.key === '6' || e.key === '7' || e.key === '8' || e.key === '9') {
-        checkLastZero(e, inp.value, e.key)
+    if (e.key === '=' || e.key === 'Enter') {
+        if (/^(\d+)$/.test(inp.value)) return
+        if (checkLastNum(inp.value)) return
+        equalListener()
     }
+    if (checkInpLength(inp.value)) return
+    if (!pressed.includes(e.key)) pressed.push(e.key)
 
-    if (e.key === '*') minusDivide(null, '×', inp.value)
-    if (e.key === '+') minusDivide(null, '+', inp.value)
-    if (e.key === '-') minusDivide(null, '-', inp.value)
-    if (e.key === '/') minusDivide(null, '/', inp.value)
+    if (e.key === '0' || e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4' || e.key === '5' || e.key === '6' || e.key === '7' || e.key === '8' || e.key === '9') checkLastZero(inp.value, e.key)
+
+    if (e.key === '*') oneKey(null, '×', inp.value)
+    if (e.key === '+') oneKey(null, '+', inp.value)
+    if (e.key === '-') oneKey(null, '-', inp.value)
+    if (e.key === '/') oneKey(null, '/', inp.value)
     if (e.key === '+') twoKeys('+', inp.value)
     if (e.key === '%') twoKeys('%', inp.value)
     if (e.key === '*') twoKeys('×', inp.value)
-    if (e.key === '=' || e.key === 'Enter') equalListener()
     if (e.key === '.') enteringDot()
 }
 
