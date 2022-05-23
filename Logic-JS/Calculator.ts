@@ -101,26 +101,27 @@ function checkResLength(valueLength: number, res: number) {
     res < 1 ? inp.value = inp.value.substring(0, currentValueLength - valueLength) + res.toFixed(3) : inp.value = inp.value.substring(0, currentValueLength - valueLength) + Math.round(res)
 }
 function defaultChecks(value: string): boolean {
-    if (expLastPow.test(value)) return true
-    if (isResult) return true
+    if (expLastPow.test(value) || isResult) return true
 }
 
 // Keyboard Function
 function checkLastNum(value: string): boolean {
-    if (value.length === 0) return true
-    if (expLastSpace.test(value)) return true
+    if (value.length === 0 || expLastSpace.test(value)) return true
 }
 
 // Equal Function
 function sortEqualArrays(signs: RegExpMatchArray, numbers: RegExpMatchArray, sign: string) {
     const index: number = signs.indexOf(sign)
+    const firstNum: number = parseFloat(numbers[index])
+    const secondNum: number = parseFloat(numbers[index + 1])
     let operationRes: number = 0
 
-    if (sign === '×') operationRes = parseFloat(numbers[index]) * parseFloat(numbers[index + 1])
-    if (sign === '/') operationRes = parseFloat(numbers[index]) / parseFloat(numbers[index + 1])
-    if (sign === '%') operationRes = parseFloat(numbers[index]) / 100 * parseFloat(numbers[index + 1])
-    if (sign === '+') operationRes = parseFloat(numbers[index]) + parseFloat(numbers[index + 1])
-    if (sign === '-') operationRes = parseFloat(numbers[index]) - parseFloat(numbers[index + 1])
+    if (sign === '□') operationRes = Math.pow(firstNum, secondNum)
+    if (sign === '×') operationRes = firstNum * secondNum
+    if (sign === '/') operationRes = firstNum / secondNum
+    if (sign === '%') operationRes = firstNum / 100 * secondNum
+    if (sign === '+') operationRes = firstNum + secondNum
+    if (sign === '- ') operationRes = firstNum - secondNum
 
     numbers.splice(index, 2)
     signs.splice(index, 1)
@@ -131,8 +132,7 @@ function sortEqualArrays(signs: RegExpMatchArray, numbers: RegExpMatchArray, sig
 // Event Listeners
 // Main Operations
 function enteringNum(e) {
-    if (checkInpLength(inp.value)) return
-    if (isResult) return
+    if (checkInpLength(inp.value) || isResult) return
     if (e.target.classList.contains('num_btn')) checkLastZero(inp.value, e.target.innerText)
 }
 
@@ -179,6 +179,7 @@ function enteringSign(e = null, sign: string = null) {
     if (expLastNum.test(inp.value) && inp.value.length > 0) {
         countingPow(inp.value)
         sign ? inp.value = inp.value + ' ' + sign + ' ' : inp.value = inp.value + ' ' + e.target.innerText + ' '
+        isResult = false
     }
 }
 
@@ -187,7 +188,7 @@ divide.onclick = enteringSign
 minus.onclick = enteringSign
 plus.onclick = enteringSign
 pow.onclick = () => {
-    enteringSign( null, '□',)
+    enteringSign( null, '□')
 }
 multiply.onclick = () => {
     enteringSign(null, '×')
@@ -265,21 +266,17 @@ del.onclick = clearOneSign
 // Equal Listener
 function equalListener() {
     if (inp.value.length === 0 || /^(\d+)$/.test(inp.value) || expLastSpace.test(inp.value)) return
-    if (/^((\d+|\d+\.\d+) (□) (\d+))$/.test(inp.value)) {
-        countingPow(inp.value, true)
-        return
-    }
-    countingPow(inp.value)
 
     const numbers: RegExpMatchArray = inp.value.match(/(\d+\.\d+)|(-\d+\.\d+)|(\d+)|(-\d+)/g)
-    const signs: any = inp.value.match(/[-+%×/]/g)
+    const signs: any = inp.value.match(/(- )|[+%×/□]/g)
 
     function sortHelper() {
+        if (signs.includes('□')) sortEqualArrays(signs, numbers, '□')
         if (signs.includes('×') && !signs.includes('/') || signs.includes('×') && signs.indexOf('×') < signs.indexOf('/')) return sortEqualArrays(signs, numbers, '×')
         if (signs.includes('/') && !signs.includes('×') || signs.includes('/') && signs.indexOf('/') < signs.indexOf('×')) return sortEqualArrays(signs, numbers, '/')
         if (signs.includes('%') && !signs.includes('×') && !signs.includes('/') || signs.includes('%') && signs.indexOf('%') < signs.indexOf('×') && signs.indexOf('/')) return sortEqualArrays(signs, numbers, '%')
-        if (signs.includes('+') && !signs.includes('-') || signs.includes('+') && signs.indexOf('+') < signs.indexOf('-')) return sortEqualArrays(signs, numbers, '+')
-        if (signs.includes('-') && !signs.includes('+') || signs.includes('-') && signs.indexOf('-') < signs.indexOf('+')) return sortEqualArrays(signs, numbers, '-')
+        if (signs.includes('+') && !signs.includes('- ') || signs.includes('+') && signs.indexOf('+') < signs.indexOf('- ')) return sortEqualArrays(signs, numbers, '+')
+        if (signs.includes('- ') && !signs.includes('+') || signs.includes('- ') && signs.indexOf('- ') < signs.indexOf('+')) return sortEqualArrays(signs, numbers, '- ')
     }
 
     function sort() {
@@ -291,8 +288,8 @@ function equalListener() {
     sort()
     setTimeout(() => {
         inp.value = numbers[0]
-    }, 10)
-    isResult = true
+        isResult = true
+    },)
 }
 
 equal.onclick = equalListener
@@ -303,12 +300,18 @@ let pressed: any = []
 
 function twoKeys(sign: string, value: string) {
     countingPow(inp.value)
-    if (pressed.includes('Shift') && pressed.includes('+') || pressed.includes('%') || pressed.includes('*')) inp.value = value + ' ' + sign + ' '
+    if (pressed.includes('Shift') && pressed.includes('+') || pressed.includes('Shift') && pressed.includes('%') || pressed.includes('Shift') && pressed.includes('*')) {
+        inp.value = value + ' ' + sign + ' '
+        isResult = false
+        return true
+    }
 }
 
 function oneKey(sign: string, value: string) {
     countingPow(value)
     inp.value = inp.value + ' ' + sign + ' '
+    isResult = false
+    return true
 }
 
 function checkLengthArr() {
@@ -333,13 +336,13 @@ function keyDown(e) {
 
     if (checkLastNum(inp.value)) return
 
-    if (e.key === '*') oneKey('×', inp.value)
-    if (e.key === '+') oneKey('+', inp.value)
-    if (e.key === '-') oneKey('-', inp.value)
-    if (e.key === '/') oneKey('/', inp.value)
-    if (e.key === '+') twoKeys('+', inp.value)
-    if (e.key === '%') twoKeys('%', inp.value)
-    if (e.key === '*') twoKeys('×', inp.value)
+    if (e.key === '*') return oneKey('×', inp.value)
+    if (e.key === '+') return oneKey('+', inp.value)
+    if (e.key === '-') return oneKey('-', inp.value)
+    if (e.key === '/') return oneKey('/', inp.value)
+    if (e.key === '+') return twoKeys('+', inp.value)
+    if (e.key === '%') return twoKeys('%', inp.value)
+    if (e.key === '*') return twoKeys('×', inp.value)
     if (e.key === '.') enteringDot()
 }
 
