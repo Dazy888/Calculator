@@ -82,7 +82,6 @@ function countingMemory(sign: string, value: string) {
         sign === '+' ? memorySum += expNum : memorySum -= expNum
     }
 }
-
 function saveMemoryHelper(value: string) {
     if (checkInpLength(inp.value)) return
     const exp: RegExpMatchArray = value.match(expAnyLastNumber)
@@ -96,10 +95,16 @@ function checkResLength(valueLength: number, res: number) {
     res < 1 ? inp.value = inp.value.substring(0, currentValueLength - valueLength) + res.toFixed(3) : inp.value = inp.value.substring(0, currentValueLength - valueLength) + Math.round(res)
 }
 
-// Keyboard Function
+// Keyboard Functions
 function checkLastNum(value: string): boolean {
     if (value.length === 0 || expLastSpace.test(value)) return true
 }
+function enteringSignKeyboardHelper(sign: string): boolean {
+    inp.value = inp.value + ' ' + sign + ' '
+    isResult = false
+    return true
+}
+
 
 // Equal Function
 function sortEqualArrays(signs: RegExpMatchArray, numbers: RegExpMatchArray, sign: string) {
@@ -286,12 +291,6 @@ equal.onclick = equalListener
 
 // Keyboard
 let pressed: any = []
-
-function enteringSignKeyboardHelper(sign: string): boolean {
-    inp.value = inp.value + ' ' + sign + ' '
-    isResult = false
-    return true
-}
 
 function enteringSignKeyboard(sign: string, value: string) {
     countingPow(value)
