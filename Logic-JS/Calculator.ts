@@ -67,7 +67,7 @@ function checkInpLength(value: string): boolean {
 function countingPow(value: string) {
     if (expLastPow.test(value)) {
         const exp: RegExpMatchArray = value.match(/((\d+|\d+\.\d+) (□) (\d+))$/)
-        inp.value = value.substring(0, value.length - exp[0].length) + Math.pow(parseFloat(exp[2]), parseInt(exp[4]))
+        inp.value = value.substring(0, value.length - exp[0].length) + Math.pow(Number(exp[2]), Number(exp[4]))
     }
 }
 function checkLastPow(value: string): boolean {
@@ -78,14 +78,14 @@ function checkLastPow(value: string): boolean {
 function countingMemory(sign: string, value: string) {
     if (expAnyLastNumber.test(value)) {
         const exp: RegExpMatchArray = value.match(expAnyLastNumber)
-        const expNum: number = parseFloat(exp[0])
+        const expNum: number = Number(exp[0])
         sign === '+' ? memorySum += expNum : memorySum -= expNum
     }
 }
 function saveMemoryHelper(value: string) {
     if (checkInpLength(inp.value)) return
     const exp: RegExpMatchArray = value.match(expAnyLastNumber)
-    memorySum = parseFloat(exp[0])
+    memorySum = Number(exp[0])
     letterM.style.display = 'block'
 }
 
@@ -109,8 +109,8 @@ function enteringSignKeyboardHelper(sign: string): boolean {
 // Equal Function
 function sortEqualArrays(signs: RegExpMatchArray, numbers: RegExpMatchArray, sign: string) {
     const index: number = signs.indexOf(sign)
-    const firstNum: number = parseFloat(numbers[index])
-    const secondNum: number = parseFloat(numbers[index + 1])
+    const firstNum: number = Number(numbers[index])
+    const secondNum: number = Number(numbers[index + 1])
     let operationRes: number = 0
 
     if (sign === '□') operationRes = Math.pow(firstNum, secondNum)
@@ -197,8 +197,8 @@ function countingSquare() {
     if (checkLastPow(inp.value)) return
     if (expPosNum.test(inp.value)) {
         const exp: RegExpMatchArray = inp.value.match(expAnyLastNumber)
-        if (parseInt(exp[0]) < 0) return
-        checkResLength(exp[0].length, Math.sqrt(parseFloat(exp[0])))
+        if (Number(exp[0]) < 0) return
+        checkResLength(exp[0].length, Math.sqrt(Number(exp[0])))
     }
 }
 
@@ -206,7 +206,7 @@ function countingInvprop() {
     if (checkLastPow(inp.value)) return
     if (expPosNum.test(inp.value)) {
         const exp: RegExpMatchArray = inp.value.match(expPosNum)
-        checkResLength(exp[0].length, 1 / parseFloat(exp[0]))
+        checkResLength(exp[0].length, 1 / Number(exp[0]))
     }
 }
 
@@ -216,9 +216,9 @@ function changingSign() {
         const exp: RegExpMatchArray = inp.value.match(expAnyLastNumber)
         const valueLength: number = inp.value.length
         const expLength: number = exp[0].length
-        const res: number = parseFloat(exp[0])
+        const res: number = Number(exp[0])
 
-        parseFloat(exp[0]) > 0 ? inp.value = inp.value.substring(0, valueLength - expLength) + (res * -1) : inp.value = inp.value.substring(0, valueLength - expLength) + Math.abs(res)
+        Number(exp[0]) > 0 ? inp.value = inp.value.substring(0, valueLength - expLength) + (res * -1) : inp.value = inp.value.substring(0, valueLength - expLength) + Math.abs(res)
     }
 }
 
