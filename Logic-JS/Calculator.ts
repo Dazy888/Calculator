@@ -287,20 +287,19 @@ equal.onclick = equalListener
 // Keyboard
 let pressed: any = []
 
-function enteringSignKey(sign: string): boolean {
+function enteringSignKeyboardHelper(sign: string): boolean {
     inp.value = inp.value + ' ' + sign + ' '
     isResult = false
     return true
 }
 
-function twoKeys(sign: string) {
-    countingPow(inp.value)
-    if (pressed.includes('Shift') && pressed.includes('+') || pressed.includes('Shift') && pressed.includes('%') || pressed.includes('Shift') && pressed.includes('*')) return enteringSignKey(sign)
-}
-
-function oneKey(sign: string, value: string) {
+function enteringSignKeyboard(sign: string, value: string) {
     countingPow(value)
-    return enteringSignKey(sign)
+    if (pressed.includes('Shift') && pressed.includes('+') || pressed.includes('Shift') && pressed.includes('%') || pressed.includes('Shift') && pressed.includes('*')) {
+        return enteringSignKeyboardHelper(sign)
+    } else {
+        return enteringSignKeyboardHelper(sign)
+    }
 }
 
 function checkLengthArr() {
@@ -325,13 +324,14 @@ function keyDown(e) {
 
     if (checkLastNum(inp.value)) return
 
-    if (e.key === '*') return oneKey('×', inp.value)
-    if (e.key === '+') return oneKey('+', inp.value)
-    if (e.key === '-') return oneKey('-', inp.value)
-    if (e.key === '/') return oneKey('/', inp.value)
-    if (e.key === '+') return twoKeys('+')
-    if (e.key === '%') return twoKeys('%')
-    if (e.key === '*') return twoKeys('×')
+    if (e.key === '*') return enteringSignKeyboard('×', inp.value)
+    if (e.key === '+') return enteringSignKeyboard('+', inp.value)
+    if (e.key === '-') return enteringSignKeyboard('-', inp.value)
+    if (e.key === '/') return enteringSignKeyboard('/', inp.value)
+    if (e.key === '+') return enteringSignKeyboard('+', inp.value)
+    if (e.key === '%') return enteringSignKeyboard('%', inp.value)
+    if (e.key === '*') return enteringSignKeyboard('×', inp.value)
+
     if (e.key === '.') enteringDot()
 }
 
