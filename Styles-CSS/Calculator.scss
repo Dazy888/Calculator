@@ -1,8 +1,11 @@
+// Imports
+@import url('https://fonts.googleapis.com/css2?family=Anybody:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
+
 // Main Styles
-* {
-  margin: 0;
-  padding: 0;
-  font-family: 'Anybody', sans-serif;
+.flex-property-set {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .let_m {
@@ -19,25 +22,19 @@ button {
   cursor: pointer;
   transition: 0.3s;
   font-size: 40px;
+  font-family: 'Anybody', sans-serif;
 
   &:hover {
     color: purple !important;
   }
 }
 
-body {
-  max-width: 1920px;
-  margin: auto;
-}
-
 #wrapper {
-  width: 100%;
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   background: purple;
   opacity: 0.9;
+
+  font-family: 'Anybody', sans-serif;
 }
 
 .container {
@@ -60,6 +57,7 @@ body {
       border: 5px solid purple;
       text-align: right;
 
+      font-family: 'Anybody', sans-serif;
       font-size: 50px;
 
       &:focus-visible {
@@ -104,9 +102,6 @@ body {
       .controls__btn {
         width: 100px;
         height: 80px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
         background: transparent;
         border: 3px solid white;
         transition: 0.3s;

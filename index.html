@@ -7,15 +7,12 @@
     <title>Calculator</title>
     <!--    Iconic Font    -->
     <script src="https://kit.fontawesome.com/0a15c952b0.js" crossorigin="anonymous"></script>
-    <!--    Main Font      -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wght@0,500;1,400;1,500&display=swap" rel="stylesheet">
     <!--    CSS     -->
+    <link rel="stylesheet" href="Styles-CSS/Reset.css">
     <link rel="stylesheet" href="Styles-CSS/Calculator.css">
 </head>
 <body>
-<div id="wrapper">
+<div id="wrapper" class="flex-property-set">
     <div class="container">
         <!-- Input -->
         <div class="input">
@@ -33,40 +30,40 @@
         <!-- Controls -->
         <div class="controls">
             <div class="controls__row">
-                <button class="controls__btn percent">%</button>
-                <button class="controls__btn sqrt"><i class="fa-solid fa-square-root-variable"></i></button>
-                <button class="controls__btn pow">х²</button>
-                <button class="controls__btn invprop">1/x</button>
+                <button class="controls__btn flex-property-set percent">%</button>
+                <button class="controls__btn flex-property-set sqrt"><i class="fa-solid fa-square-root-variable"></i></button>
+                <button class="controls__btn flex-property-set pow">х²</button>
+                <button class="controls__btn flex-property-set invprop">1/x</button>
             </div>
             <div class="controls__row">
-                <button class="controls__btn inp-clear">CE</button>
-                <button class="controls__btn clear">C</button>
-                <button class="controls__btn delete"><i class="fa-solid fa-delete-left"></i></button>
-                <button class="controls__btn divide">/</button>
+                <button class="controls__btn flex-property-set inp-clear">CE</button>
+                <button class="controls__btn flex-property-set clear">C</button>
+                <button class="controls__btn flex-property-set delete"><i class="fa-solid fa-delete-left"></i></button>
+                <button class="controls__btn flex-property-set divide">/</button>
             </div>
             <div class="controls__row">
-                <button class="controls__btn num_btn">7</button>
-                <button class="controls__btn num_btn">8</button>
-                <button class="controls__btn num_btn">9</button>
-                <button class="controls__btn multiply"><i class="fa-solid fa-xmark"></i></button>
+                <button class="controls__btn flex-property-set num_btn">7</button>
+                <button class="controls__btn flex-property-set num_btn">8</button>
+                <button class="controls__btn flex-property-set num_btn">9</button>
+                <button class="controls__btn flex-property-set multiply"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="controls__row">
-                <button class="controls__btn num_btn">4</button>
-                <button class="controls__btn num_btn">5</button>
-                <button class="controls__btn num_btn">6</button>
-                <button class="controls__btn minus"><span>-</span></button>
+                <button class="controls__btn flex-property-set num_btn">4</button>
+                <button class="controls__btn flex-property-set num_btn">5</button>
+                <button class="controls__btn flex-property-set num_btn">6</button>
+                <button class="controls__btn flex-property-set minus"><span>-</span></button>
             </div>
             <div class="controls__row">
-                <button class="controls__btn num_btn">1</button>
-                <button class="controls__btn num_btn">2</button>
-                <button class="controls__btn num_btn">3</button>
-                <button class="controls__btn plus"><span>+</span></button>
+                <button class="controls__btn flex-property-set num_btn">1</button>
+                <button class="controls__btn flex-property-set num_btn">2</button>
+                <button class="controls__btn flex-property-set num_btn">3</button>
+                <button class="controls__btn flex-property-set plus"><span>+</span></button>
             </div>
             <div class="controls__row">
-                <button class="controls__btn negative"><i class="fa-solid fa-plus-minus"></i></button>
-                <button class="controls__btn num_btn">0</button>
-                <button class="controls__btn dot-btn">.</button>
-                <button class="controls__btn equal"><i class="fa-solid fa-equals"></i></button>
+                <button class="controls__btn flex-property-set negative"><i class="fa-solid fa-plus-minus"></i></button>
+                <button class="controls__btn flex-property-set num_btn">0</button>
+                <button class="controls__btn flex-property-set dot-btn">.</button>
+                <button class="controls__btn flex-property-set equal"><i class="fa-solid fa-equals"></i></button>
             </div>
         </div>
     </div>

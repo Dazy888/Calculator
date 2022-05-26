@@ -10,7 +10,7 @@ const mp: any = document.querySelector('.mp')
 const mm: any = document.querySelector('.mm')
 const ms: any = document.querySelector('.ms')
 const letterM: any = document.querySelector('.let_m')
-let memorySum: number = 0
+let memorySum = 0
 
 // Default Operations
 const percent: any = document.querySelector('.percent')
@@ -21,7 +21,7 @@ const plus: any = document.querySelector('.plus')
 const divide: any = document.querySelector('.divide')
 const dot: any = document.querySelector('.dot-btn')
 const equal: any = document.querySelector('.equal')
-let isResult: boolean = false
+let isResult = false
 
 // Last Number Operations
 const square: any = document.querySelector('.sqrt')
@@ -36,14 +36,14 @@ const del: any = document.querySelector('.delete')
 
 // Helping Functions And Variables
 // Number Expressions
-const expAnyLastNumber: RegExp = /(\d+)$|(\d+\.\d+)$|(-\d+)$|(-\d+\.\d+)$/
-const expLastNum: RegExp = /(\d+)$/
-const expPosNum: RegExp = /(\d+\.\d+)$|(\d+)$/
-const expNegNum: RegExp = /(-\d+)$/
+const expAnyLastNumber = /(\d+)$|(\d+\.\d+)$|(-\d+)$|(-\d+\.\d+)$/
+const expLastNum = /(\d+)$/
+const expPosNum = /(\d+\.\d+)$|(\d+)$/
+const expNegNum = /(-\d+)$/
 // Pow Expression
-const expLastPow: RegExp = /(□ \d+)$/
+const expLastPow = /(□ \d+)$/
 // Space Expression
-const expLastSpace: RegExp = /(\s)$/
+const expLastSpace = /(\s)$/
 
 
 // Zero Function
@@ -66,10 +66,11 @@ function checkInpLength(value: string): boolean {
 // Pow Functions
 function countingPow(value: string) {
     if (expLastPow.test(value)) {
-        const exp: RegExpMatchArray = value.match(/((\d+|\d+\.\d+) (□) (\d+))$/)
+        const exp = value.match(/((\d+|\d+\.\d+) (□) (\d+))$/)
         inp.value = value.substring(0, value.length - exp[0].length) + Math.pow(Number(exp[2]), Number(exp[4]))
     }
 }
+
 function checkLastPow(value: string): boolean {
     if (expLastPow.test(value)) return true
 }
@@ -77,21 +78,22 @@ function checkLastPow(value: string): boolean {
 // Memory Functions
 function countingMemory(sign: string, value: string) {
     if (expAnyLastNumber.test(value)) {
-        const exp: RegExpMatchArray = value.match(expAnyLastNumber)
-        const expNum: number = Number(exp[0])
+        const exp = value.match(expAnyLastNumber)
+        const expNum = Number(exp[0])
         sign === '+' ? memorySum += expNum : memorySum -= expNum
     }
 }
+
 function saveMemoryHelper(value: string) {
     if (checkInpLength(inp.value)) return
-    const exp: RegExpMatchArray = value.match(expAnyLastNumber)
+    const exp = value.match(expAnyLastNumber)
     memorySum = Number(exp[0])
     letterM.style.display = 'block'
 }
 
 // Last Number Operations Function
 function checkResLength(valueLength: number, res: number) {
-    const currentValueLength: number = inp.value.length
+    const currentValueLength = inp.value.length
     res < 1 ? inp.value = inp.value.substring(0, currentValueLength - valueLength) + res.toFixed(3) : inp.value = inp.value.substring(0, currentValueLength - valueLength) + Math.round(res)
 }
 
@@ -99,6 +101,7 @@ function checkResLength(valueLength: number, res: number) {
 function checkLastNum(value: string): boolean {
     if (value.length === 0 || expLastSpace.test(value)) return true
 }
+
 function enteringSignKeyboardHelper(sign: string): boolean {
     inp.value = inp.value + ' ' + sign + ' '
     isResult = false
@@ -108,10 +111,10 @@ function enteringSignKeyboardHelper(sign: string): boolean {
 
 // Equal Function
 function sortEqualArrays(signs: RegExpMatchArray, numbers: RegExpMatchArray, sign: string) {
-    const index: number = signs.indexOf(sign)
-    const firstNum: number = Number(numbers[index])
-    const secondNum: number = Number(numbers[index + 1])
-    let operationRes: number = 0
+    const index = signs.indexOf(sign)
+    const firstNum = Number(numbers[index])
+    const secondNum = Number(numbers[index + 1])
+    let operationRes = 0
 
     if (sign === '□') operationRes = Math.pow(firstNum, secondNum)
     if (sign === '×') operationRes = firstNum * secondNum
@@ -175,7 +178,7 @@ function enteringSign(e, sign: string = null) {
     if (checkInpLength(inp.value)) return
     if (expLastNum.test(inp.value) && inp.value.length > 0) {
         countingPow(inp.value)
-        const value: string = inp.value
+        const value = inp.value
         sign ? inp.value = value + ' ' + sign + ' ' : inp.value = value + ' ' + e.target.innerText + ' '
         isResult = false
     }
@@ -186,7 +189,7 @@ divide.onclick = enteringSign
 minus.onclick = enteringSign
 plus.onclick = enteringSign
 pow.onclick = () => {
-    enteringSign( null, '□')
+    enteringSign(null, '□')
 }
 multiply.onclick = () => {
     enteringSign(null, '×')
@@ -196,7 +199,7 @@ multiply.onclick = () => {
 function countingSquare() {
     if (checkLastPow(inp.value)) return
     if (expPosNum.test(inp.value)) {
-        const exp: RegExpMatchArray = inp.value.match(expAnyLastNumber)
+        const exp = inp.value.match(expAnyLastNumber)
         if (Number(exp[0]) < 0) return
         checkResLength(exp[0].length, Math.sqrt(Number(exp[0])))
     }
@@ -205,7 +208,7 @@ function countingSquare() {
 function countingInvprop() {
     if (checkLastPow(inp.value)) return
     if (expPosNum.test(inp.value)) {
-        const exp: RegExpMatchArray = inp.value.match(expPosNum)
+        const exp = inp.value.match(expPosNum)
         checkResLength(exp[0].length, 1 / Number(exp[0]))
     }
 }
@@ -213,11 +216,10 @@ function countingInvprop() {
 function changingSign() {
     if (checkLastPow(inp.value)) return
     if (expPosNum.test(inp.value)) {
-        const exp: RegExpMatchArray = inp.value.match(expAnyLastNumber)
-        const valueLength: number = inp.value.length
-        const expLength: number = exp[0].length
-        const res: number = Number(exp[0])
-
+        const exp = inp.value.match(expAnyLastNumber)
+        const valueLength = inp.value.length
+        const expLength = exp[0].length
+        const res = Number(exp[0])
         Number(exp[0]) > 0 ? inp.value = inp.value.substring(0, valueLength - expLength) + (res * -1) : inp.value = inp.value.substring(0, valueLength - expLength) + Math.abs(res)
     }
 }
@@ -238,7 +240,7 @@ function clearAll() {
 }
 
 function clearOneSign() {
-    const valueLength: number = inp.value.length
+    const valueLength = inp.value.length
     if (isResult) {
         clearInp()
         isResult = false
@@ -261,8 +263,8 @@ del.onclick = clearOneSign
 function equalListener() {
     if (inp.value.length === 0 || /^(\d+)$/.test(inp.value) || expLastSpace.test(inp.value)) return
 
-    const numbers: RegExpMatchArray = inp.value.match(/(\d+\.\d+)|(-\d+\.\d+)|(\d+)|(-\d+)/g)
-    const signs: any = inp.value.match(/(- )|[+%×/□]/g)
+    const numbers = inp.value.match(/(\d+\.\d+)|(-\d+\.\d+)|(\d+)|(-\d+)/g)
+    const signs = inp.value.match(/(- )|[+%×/□]/g)
 
     function sortHelper() {
         if (signs.includes('□')) sortEqualArrays(signs, numbers, '□')
