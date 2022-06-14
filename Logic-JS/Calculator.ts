@@ -1,7 +1,8 @@
+
 // Getting All Elements
 // Main
-const inp: any = document.querySelector('input')
-const cont: any = document.querySelector('.container')
+const container: any = document.querySelector('.container')
+const input: any = document.querySelector('.input__result')
 
 // Memory
 const mc: any = document.querySelector('.mc')
@@ -9,7 +10,7 @@ const mr: any = document.querySelector('.mr')
 const mp: any = document.querySelector('.mp')
 const mm: any = document.querySelector('.mm')
 const ms: any = document.querySelector('.ms')
-const letterM: any = document.querySelector('.let_m')
+const letterM: any = document.querySelector('.letter-m')
 let memorySum = 0
 
 // Default Operations
@@ -48,7 +49,7 @@ const expLastSpace = /(\s)$/
 
 // Zero Function
 function checkLastZero(value: string, key: string) {
-    /^(0)$|(\s0)$/.test(value) ? inp.value = value.substring(0, value.length - 1) + key : inp.value = value + key
+    /^(0)$|(\s0)$/.test(value) ? input.value = value.substring(0, value.length - 1) + key : input.value = value + key
 }
 
 // Check Input Length Function
@@ -67,7 +68,7 @@ function checkInpLength(value: string): boolean {
 function countingPow(value: string) {
     if (expLastPow.test(value)) {
         const exp = value.match(/((\d+|\d+\.\d+) (□) (\d+))$/)
-        inp.value = value.substring(0, value.length - exp[0].length) + Math.pow(Number(exp[2]), Number(exp[4]))
+        input.value = value.substring(0, value.length - exp[0].length) + Number(exp[2]) ** Number(exp[4])
     }
 }
 
@@ -85,7 +86,7 @@ function countingMemory(sign: string, value: string) {
 }
 
 function saveMemoryHelper(value: string) {
-    if (checkInpLength(inp.value)) return
+    if (checkInpLength(input.value)) return
     const exp = value.match(expAnyLastNumber)
     memorySum = Number(exp[0])
     letterM.style.display = 'block'
@@ -93,8 +94,8 @@ function saveMemoryHelper(value: string) {
 
 // Last Number Operations Function
 function checkResLength(valueLength: number, res: number) {
-    const currentValueLength = inp.value.length
-    res < 1 ? inp.value = inp.value.substring(0, currentValueLength - valueLength) + res.toFixed(3) : inp.value = inp.value.substring(0, currentValueLength - valueLength) + Math.round(res)
+    const currentValueLength = input.value.length
+    res < 1 ? input.value = input.value.substring(0, currentValueLength - valueLength) + res.toFixed(3) : input.value = input.value.substring(0, currentValueLength - valueLength) + Math.round(res)
 }
 
 // Keyboard Functions
@@ -103,7 +104,7 @@ function checkLastNum(value: string): boolean {
 }
 
 function enteringSignKeyboardHelper(sign: string): boolean {
-    inp.value = inp.value + ' ' + sign + ' '
+    input.value = input.value + ' ' + sign + ' '
     isResult = false
     return true
 }
@@ -131,17 +132,16 @@ function sortEqualArrays(signs: RegExpMatchArray, numbers: RegExpMatchArray, sig
 
 // Event Listeners
 // Main Operations
-function enteringNum(e) {
-    if (checkInpLength(inp.value) || isResult) return
-    if (e.target.classList.contains('num_btn')) checkLastZero(inp.value, e.target.innerText)
+container.onclick = (e) => {
+    if (checkInpLength(input.value) || isResult) return
+    if (e.target.classList.contains('num_btn')) checkLastZero(input.value, e.target.innerText)
 }
 
 function enteringDot() {
-    if (checkLastPow(inp.value) || isResult) return
-    if (expLastNum.test(inp.value) && !/(\d+\.\d+)$|(\d+\.)$/.test(inp.value)) inp.value = inp.value + '.'
+    if (checkLastPow(input.value) || isResult) return
+    if (expLastNum.test(input.value) && !/(\d+\.\d+)$|(\d+\.)$/.test(input.value)) input.value = input.value + '.'
 }
 
-cont.onclick = enteringNum
 dot.onclick = enteringDot
 
 // Memory Buttons
@@ -150,36 +150,26 @@ function clearMemory() {
     letterM.style.display = 'none'
 }
 
-function plusMemory() {
-    if (expAnyLastNumber.test(inp.value) && getComputedStyle(letterM).display === 'none') saveMemoryHelper(inp.value)
-    countingMemory('+', inp.value)
+mp.onclick = () => {
+    if (expAnyLastNumber.test(input.value) && getComputedStyle(letterM).display === 'none') saveMemoryHelper(input.value)
+    countingMemory('+', input.value)
 }
 
-function minusMemory() {
-    countingMemory('-', inp.value)
-}
-
-function saveMemory() {
-    if (expAnyLastNumber.test(inp.value)) saveMemoryHelper(inp.value)
-}
-
-function readMemory() {
-    inp.value = memorySum.toString().substring(0, 15)
+ms.onclick = () => {
+    if (expAnyLastNumber.test(input.value)) saveMemoryHelper(input.value)
 }
 
 mc.onclick = clearMemory
-mr.onclick = readMemory
-mp.onclick = plusMemory
-mm.onclick = minusMemory
-ms.onclick = saveMemory
+mr.onclick = () => input.value = memorySum.toString().substring(0, 15)
+mm.onclick = () => countingMemory('-', input.value)
 
 // Default Operations
 function enteringSign(e, sign: string = null) {
-    if (checkInpLength(inp.value)) return
-    if (expLastNum.test(inp.value) && inp.value.length > 0) {
-        countingPow(inp.value)
-        const value = inp.value
-        sign ? inp.value = value + ' ' + sign + ' ' : inp.value = value + ' ' + e.target.innerText + ' '
+    if (checkInpLength(input.value)) return
+    if (expLastNum.test(input.value) && input.value.length > 0) {
+        countingPow(input.value)
+        const value = input.value
+        sign ? input.value = value + ' ' + sign + ' ' : input.value = value + ' ' + e.target.innerText + ' '
         isResult = false
     }
 }
@@ -188,83 +178,73 @@ percent.onclick = enteringSign
 divide.onclick = enteringSign
 minus.onclick = enteringSign
 plus.onclick = enteringSign
-pow.onclick = () => {
-    enteringSign(null, '□')
-}
-multiply.onclick = () => {
-    enteringSign(null, '×')
-}
+pow.onclick = () => enteringSign(null, '□')
+multiply.onclick = () => enteringSign(null, '×')
 
 // Last Numbers Operations
-function countingSquare() {
-    if (checkLastPow(inp.value)) return
-    if (expPosNum.test(inp.value)) {
-        const exp = inp.value.match(expAnyLastNumber)
+square.onclick = () => {
+    if (checkLastPow(input.value)) return
+    if (expPosNum.test(input.value)) {
+        const exp = input.value.match(expAnyLastNumber)
         if (Number(exp[0]) < 0) return
         checkResLength(exp[0].length, Math.sqrt(Number(exp[0])))
     }
 }
 
-function countingInvprop() {
-    if (checkLastPow(inp.value)) return
-    if (expPosNum.test(inp.value)) {
-        const exp = inp.value.match(expPosNum)
+invprop.onclick = () => {
+    if (checkLastPow(input.value)) return
+    if (expPosNum.test(input.value)) {
+        const exp = input.value.match(expPosNum)
         checkResLength(exp[0].length, 1 / Number(exp[0]))
     }
 }
 
-function changingSign() {
-    if (checkLastPow(inp.value)) return
-    if (expPosNum.test(inp.value)) {
-        const exp = inp.value.match(expAnyLastNumber)
-        const valueLength = inp.value.length
+changeSign.onclick = () => {
+    if (checkLastPow(input.value)) return
+    if (expPosNum.test(input.value)) {
+        const exp = input.value.match(expAnyLastNumber)
+        const valueLength = input.value.length
         const expLength = exp[0].length
         const res = Number(exp[0])
-        Number(exp[0]) > 0 ? inp.value = inp.value.substring(0, valueLength - expLength) + (res * -1) : inp.value = inp.value.substring(0, valueLength - expLength) + Math.abs(res)
+        Number(exp[0]) > 0 ? input.value = input.value.substring(0, valueLength - expLength) + (res * -1) : input.value = input.value.substring(0, valueLength - expLength) + Math.abs(res)
     }
 }
-
-square.onclick = countingSquare
-invprop.onclick = countingInvprop
-changeSign.onclick = changingSign
 
 
 // Clear Operations
-function clearInp() {
-    inp.value = ''
-}
-
-function clearAll() {
-    clearInp()
-    if (getComputedStyle(letterM).display === 'block') clearMemory()
+function clearInput() {
+    input.value = ''
+    isResult = false
 }
 
 function clearOneSign() {
-    const valueLength = inp.value.length
+    const valueLength = input.value.length
     if (isResult) {
-        clearInp()
+        input.value = ''
         isResult = false
-    } else if (expLastSpace.test(inp.value)) {
-        inp.value = inp.value.substring(0, valueLength - 3)
-    } else if (expNegNum.test(inp.value)) {
-        const exp: RegExpMatchArray = inp.value.match(expNegNum)
-        inp.value = inp.value.substring(0, valueLength - exp[1].length)
+    } else if (expLastSpace.test(input.value)) {
+        input.value = input.value.substring(0, valueLength - 3)
+    } else if (expNegNum.test(input.value)) {
+        const exp: RegExpMatchArray = input.value.match(expNegNum)
+        input.value = input.value.substring(0, valueLength - exp[1].length)
     } else {
-        inp.value = inp.value.substring(0, valueLength - 1)
+        input.value = input.value.substring(0, valueLength - 1)
     }
 }
 
-ce.onclick = clearInp
-c.onclick = clearAll
+ce.onclick = clearInput
+c.onclick = () => {
+    clearInput()
+    if (getComputedStyle(letterM).display === 'block') clearMemory()
+}
 del.onclick = clearOneSign
-
 
 // Equal Listener
 function equalListener() {
-    if (inp.value.length === 0 || /^(\d+)$/.test(inp.value) || expLastSpace.test(inp.value)) return
+    if (input.value.length === 0 || /^(\d+)$/.test(input.value) || expLastSpace.test(input.value)) return
 
-    const numbers = inp.value.match(/(\d+\.\d+)|(-\d+\.\d+)|(\d+)|(-\d+)/g)
-    const signs = inp.value.match(/(- )|[+%×/□]/g)
+    const numbers = input.value.match(/(\d+\.\d+)|(-\d+\.\d+)|(\d+)|(-\d+)/g)
+    const signs = input.value.match(/(- )|[+%×/□]/g)
 
     function sortHelper() {
         if (signs.includes('□')) sortEqualArrays(signs, numbers, '□')
@@ -283,7 +263,7 @@ function equalListener() {
 
     sort()
     setTimeout(() => {
-        inp.value = numbers[0]
+        input.value = numbers[0]
         isResult = true
     })
 }
@@ -311,27 +291,27 @@ function checkLengthArr() {
 function keyDown(e) {
     if (e.key === 'Backspace') clearOneSign()
     if (e.key === '=' || e.key === 'Enter') {
-        if (/^(\d+)$/.test(inp.value) || checkLastNum(inp.value)) return
+        if (/^(\d+)$/.test(input.value) || checkLastNum(input.value)) return
         equalListener()
     }
 
-    if (checkInpLength(inp.value)) return
+    if (checkInpLength(input.value)) return
     if (!pressed.includes(e.key)) pressed.push(e.key)
 
     if (e.key === '0' || e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4' || e.key === '5' || e.key === '6' || e.key === '7' || e.key === '8' || e.key === '9') {
         if (isResult) return
-        checkLastZero(inp.value, e.key)
+        checkLastZero(input.value, e.key)
     }
 
-    if (checkLastNum(inp.value)) return
+    if (checkLastNum(input.value)) return
 
-    if (e.key === '*') return enteringSignKeyboard('×', inp.value)
-    if (e.key === '+') return enteringSignKeyboard('+', inp.value)
-    if (e.key === '-') return enteringSignKeyboard('-', inp.value)
-    if (e.key === '/') return enteringSignKeyboard('/', inp.value)
-    if (e.key === '+') return enteringSignKeyboard('+', inp.value)
-    if (e.key === '%') return enteringSignKeyboard('%', inp.value)
-    if (e.key === '*') return enteringSignKeyboard('×', inp.value)
+    if (e.key === '*') return enteringSignKeyboard('×', input.value)
+    if (e.key === '+') return enteringSignKeyboard('+', input.value)
+    if (e.key === '-') return enteringSignKeyboard('-', input.value)
+    if (e.key === '/') return enteringSignKeyboard('/', input.value)
+    if (e.key === '+') return enteringSignKeyboard('+', input.value)
+    if (e.key === '%') return enteringSignKeyboard('%', input.value)
+    if (e.key === '*') return enteringSignKeyboard('×', input.value)
 
     if (e.key === '.') enteringDot()
 }

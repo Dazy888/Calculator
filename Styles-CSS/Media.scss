@@ -9,23 +9,23 @@
 }
 
 @media screen and (max-width: 620px) {
-  .let_m {
+  .letter-m {
     top: 40px;
     left: 40px;
     font-size: 30px;
   }
 
-  .input {
+  .container__input {
     margin-bottom: 40px !important;
 
-    .result_inp {
+    .input__result {
       width: 340px !important;
       height: 70px !important;
       font-size: 33px !important;
     }
   }
 
-  .memory {
+  .input__memory {
     .memory__btn {
       width: 65px !important;
       height: 65px !important;
@@ -34,12 +34,12 @@
     }
   }
 
-  .controls {
+  .container__controls {
     .controls__row {
       width: 380px !important;
     }
 
-    .controls__btn {
+    .row__btn {
       width: 80px !important;
       height: 60px !important;
       font-size: 30px !important;
@@ -52,35 +52,35 @@
 }
 
 @media screen and (max-width: 490px) {
-  .let_m {
+  .letter-m {
     top: 35px;
     left: 30px;
     font-size: 25px;
   }
 
-  .input {
+  .container__input {
     margin-bottom: 30px !important;
 
-    .result_inp {
+    .input__result {
       width: 320px !important;
       font-size: 31px !important;
       margin-bottom: 30px !important;
     }
   }
 
-  .memory {
+  .input__memory {
     .memory__btn {
       width: 55px !important;
       height: 55px !important;
     }
   }
 
-  .controls {
+  .container__controls {
     .controls__row {
       width: 330px !important;
     }
 
-    .controls__btn {
+    .row__btn {
       width: 70px !important;
       height: 50px !important;
       font-size: 25px !important;
@@ -93,21 +93,21 @@
 }
 
 @media screen and (max-width: 400px) {
-  .let_m {
+  .letter-m {
     top: 40px;
     left: 25px;
     font-size: 21px;
   }
 
-  .input {
-    .result_inp {
+  .container__input {
+    .input__result {
       width: 270px !important;
       height: 60px !important;
       font-size: 27px !important;
     }
   }
 
-  .memory {
+  .input__memory {
     .memory__btn {
       width: 50px !important;
       height: 50px !important;
@@ -116,12 +116,12 @@
     }
   }
 
-  .controls {
+  .container__controls {
     .controls__row {
       width: 280px !important;
     }
 
-    .controls__btn {
+    .row__btn {
       width: 60px !important;
       height: 40px !important;
       font-size: 20px !important;

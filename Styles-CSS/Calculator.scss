@@ -13,7 +13,7 @@
   align-items: center;
 }
 
-.let_m {
+.letter-m {
   display: none;
   position: absolute;
   top: 60px;
@@ -38,7 +38,6 @@ button {
   min-height: 100vh;
   background: purple;
   opacity: 0.9;
-
   font-family: 'Anybody', sans-serif;
 }
 
@@ -48,12 +47,12 @@ button {
   box-sizing: border-box;
   background-color: black;
 
-  .input {
+  .container__input {
     margin-bottom: 50px;
     position: relative;
     text-align: center;
 
-    .result_inp {
+    .input__result {
       width: 485px;
       height: 100px;
       margin-bottom: 40px;
@@ -70,7 +69,7 @@ button {
       }
     }
 
-    .memory {
+    .input__memory {
       text-align: center;
 
       .memory__btn {
@@ -96,7 +95,7 @@ button {
     }
   }
 
-  .controls {
+  .container__controls {
     .controls__row {
       width: 450px;
       display: flex;
@@ -104,13 +103,12 @@ button {
       align-items: center;
       margin: 10px auto 0 auto;
 
-      .controls__btn {
+      .row__btn {
         width: 100px;
         height: 80px;
         background: transparent;
         border: 3px solid white;
         transition: 0.3s;
-
         color: white;
 
         span {
