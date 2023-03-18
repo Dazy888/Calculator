@@ -77,6 +77,12 @@
 
 @media (max-width: 768px) {
     #wrapper {
+      .letter-m {
+        top: 40px;
+        left: 40px;
+        font-size: 30px;
+      }
+
       .container {
         input {
           width: 340px;
@@ -118,6 +124,12 @@
 
 @media (max-width: 425px) {
   #wrapper {
+    .letter-m {
+      top: 45px;
+      left: 30px;
+      font-size: 25px;
+    }
+
     .container {
       input {
         width: 310px;
@@ -152,6 +164,12 @@
 
 @media (max-width: 375px) {
   #wrapper {
+    .letter-m {
+      top: 40px;
+      left: 25px;
+      font-size: 21px;
+    }
+
     .container {
       input {
         width: 250px;
