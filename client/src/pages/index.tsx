@@ -1,20 +1,16 @@
 import React, { useEffect, useRef } from "react"
 import Head from 'next/head'
-// Styles
+import { Calculator } from '@/services/calculator'
 import styles from '@/styles/Index.module.scss'
-// Components
+import { useAppDispatch } from "@/hooks/redux"
 import { Input } from "@/components/Input"
 import { IntegerButtons } from "@/components/IntegerButtons"
-// Service
-import { Calculator } from '@/services/calculator'
-// Hooks
-import { useAppDispatch } from "@/hooks/redux"
 
 const Home = () => {
     const mRef: any = useRef()
     const dispatch = useAppDispatch()
 
-    const getCustomAttr = (value: string) => {
+    function getCustomAttr(value: string) {
         return { value }
     }
 

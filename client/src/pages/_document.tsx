@@ -1,16 +1,14 @@
 import React from "react"
 import { Html, Head, Main, NextScript } from 'next/document'
 
-const Document = () => {
-  return (
+const Document = () => (
     <Html lang="en">
-      <Head />
-      <body>
+        <Head />
+        <body>
         <Main />
         <NextScript />
-      </body>
+        </body>
     </Html>
-  )
-}
+)
 
 export default React.memo(Document)

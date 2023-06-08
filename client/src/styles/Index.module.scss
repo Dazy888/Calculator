@@ -26,37 +26,33 @@
       border: 5px solid purple;
     }
 
-    .memory {
-      button {
-        width: 85px;
-        height: 85px;
-        border: 3px solid white;
+    .memory button {
+      width: 85px;
+      height: 85px;
+      border: 3px solid white;
 
-        &:hover {
-          transform: rotate(360deg);
-          color: purple;
-        }
+      &:hover {
+        transform: rotate(360deg);
+        color: purple;
       }
     }
 
-    .controls {
-      div {
-        width: 450px;
+    .controls div {
+      width: 450px;
 
-        button {
-          width: 100px;
-          height: 80px;
-          border: 3px solid white;
-          transition: 0.3s;
+      button {
+        width: 100px;
+        height: 80px;
+        border: 3px solid white;
+        transition: 0.3s;
 
-          &:hover {
-            transform: scale(1.2) translate(20px, -20px);
-            box-shadow: -5px 10px 25px purple;
-          }
+        &:hover {
+          transform: scale(1.2) translate(20px, -20px);
+          box-shadow: -5px 10px 25px purple;
+        }
 
-          span {
-            font-size: 100px;
-          }
+        span {
+          font-size: 100px;
         }
       }
     }
@@ -64,14 +60,10 @@
 }
 
 @media (max-width: 1024px) {
-  .container {
-    button {
-      &:hover {
-        transform: rotate(0) scale(1) translate(0) !important;
-        box-shadow: 0 0 !important;
-        color: white !important;
-      }
-    }
+  .container button:hover {
+    transform: rotate(0) scale(1) translate(0) !important;
+    box-shadow: 0 0 !important;
+    color: white !important;
   }
 }
 
@@ -90,13 +82,11 @@
           font-size: 33px;
         }
 
-        .memory {
-          button {
-            width: 65px;
-            height: 65px;
-            margin-right: 15px;
-            font-size: 25px;
-          }
+        .memory button {
+          width: 65px;
+          height: 65px;
+          margin-right: 15px;
+          font-size: 25px;
         }
 
         .controls {
@@ -136,25 +126,21 @@
         font-size: 31px;
       }
 
-      .memory {
-        button {
-          width: 55px;
-          height: 55px;
-        }
+      .memory button {
+        width: 55px;
+        height: 55px;
       }
 
-      .controls {
-        div {
-          width: 320px;
+      .controls div {
+        width: 320px;
 
-          button {
-            width: 70px;
-            height: 50px;
-            font-size: 25px;
+        button {
+          width: 70px;
+          height: 50px;
+          font-size: 25px;
 
-            span {
-              font-size: 60px;
-            }
+          span {
+            font-size: 60px;
           }
         }
       }
@@ -177,27 +163,23 @@
         font-size: 27px;
       }
 
-      .memory {
-        button {
-          width: 45px;
-          height: 45px;
-          margin-right: 10px;
-          font-size: 20px;
-        }
+      .memory button {
+        width: 45px;
+        height: 45px;
+        margin-right: 10px;
+        font-size: 20px;
       }
 
-      .controls {
-        div {
-          width: 270px;
+      .controls div {
+        width: 270px;
 
-          button {
-            width: 60px;
-            height: 40px;
-            font-size: 20px;
+        button {
+          width: 60px;
+          height: 40px;
+          font-size: 20px;
 
-            span {
-              font-size: 50px;
-            }
+          span {
+            font-size: 50px;
           }
         }
       }

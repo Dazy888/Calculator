@@ -6,12 +6,10 @@ interface Props {
     icon: string
 }
 
-const IntegerBtnComponent: React.FC<Props> = ({ customAttr, value, icon }) => {
-    return(
-        <button value={value} className={'flex justify-center items-center'}>
-            <i {...customAttr} className={`fa-solid fa-${icon}`}/>
-        </button>
-    )
-}
+const IntegerBtnComponent: React.FC<Props> = ({ customAttr, value, icon }) => (
+    <button value={value} className={'flex justify-center items-center'}>
+        <i {...customAttr} className={`fa-solid fa-${icon}`}/>
+    </button>
+)
 
 export const IntegerBtn = React.memo(IntegerBtnComponent)

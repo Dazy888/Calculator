@@ -28,9 +28,7 @@ export const Calculator = {
 
     checkInpLength(): true | void {
         const integers: any = this.inpValue.match(/\d+/g)
-        if (integers) {
-            if (integers[0].length >= 10) return true
-        }
+        if (integers && integers[0].length >= 10) return true
     },
 
     countingPow(dispatch: any) {
@@ -212,13 +210,7 @@ export const Calculator = {
             if (signs.includes('- ') && !signs.includes('+') || signs.includes('- ') && signs.indexOf('- ') < signs.indexOf('+')) return sortEqualArrays(signs, numbers, '- ')
         }
 
-        function sort() {
-            for (let i = 0; i <= signs.length + 6; i++) {
-                sortHelper()
-            }
-        }
-
-        sort()
+        for (let i = 0; i <= signs.length + 6; i++) sortHelper()
         setTimeout(() => {
             this.dispatchRes(numbers[0], dispatch, true)
         })
