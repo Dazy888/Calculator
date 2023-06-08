@@ -4,9 +4,7 @@ import Script from "next/script"
 import { Provider } from "react-redux"
 import { Analytics } from '@vercel/analytics/react'
 import { store } from "@/store/store"
-// Styles
 import '@/styles/reset.scss'
-import '@/styles/main.scss'
 
 const App: React.FC<AppProps> = ({ Component, pageProps }) => (
     <>
