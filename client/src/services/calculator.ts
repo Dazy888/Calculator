@@ -1,4 +1,5 @@
-import { setValue } from "@/store/reducers/CalculatorSlice"
+import { setIsMemorized, setValue } from "@/store/reducers/CalculatorSlice"
+import { AppDispatch } from "@/store/store"
 
 export const Calculator = {
     expAnyLastNumber : /(\d+)$|(\d+\.\d+)$|(-\d+)$|(-\d+\.\d+)$/,
@@ -12,40 +13,44 @@ export const Calculator = {
     isResult : false,
     pressed : [''],
 
-    dispatchRes(value: string, dispatch: any, isResult?: boolean) {
+    dispatchRes(value: string, dispatch: AppDispatch, isResult?: boolean) {
         this.inpValue = value
         dispatch(setValue(this.inpValue))
         if (isResult !== undefined) this.isResult = isResult
     },
 
-    checkLastZero(key: string, dispatch: any) {
-        if (/^(0)$|(\s0)$/.test(this.inpValue)) {
-            this.dispatchRes(this.inpValue.substring(0, this.inpValue.length - 1) + key, dispatch)
-        } else {
-            this.dispatchRes(this.inpValue + key, dispatch)
+    checkLastZero(key: string, dispatch: AppDispatch) {
+        const isLastZero = /^(0)$|(\s0)$/.test(this.inpValue)
+        const newValue = `${isLastZero ? this.inpValue.substring(0, this.inpValue.length - 1) : this.inpValue}` + key
+        this.dispatchRes(newValue, dispatch)
+    },
+
+    checkInpLength() {
+        const integers = this.inpValue.match(/\d+/g)
+        return integers && integers[0].length >= 10
+    },
+
+    countingPow(dispatch: AppDispatch) {
+        const matches = this.inpValue.match(/((\d+|\d+\.\d+) (□) (\d+))$/)
+
+        if (matches) {
+            const base = Number(matches[2])
+            const exponent = Number(matches[4])
+            const result = Math.pow(base, exponent)
+            this.dispatchRes(this.inpValue.substring(0, this.inpValue.length - matches[0].length) + result, dispatch)
         }
     },
 
-    checkInpLength(): true | void {
-        const integers: any = this.inpValue.match(/\d+/g)
-        if (integers && integers[0].length >= 10) return true
-    },
-
-    countingPow(dispatch: any) {
-        if (this.expLastPow.test(this.inpValue)) {
-            const exp: any = this.inpValue.match(/((\d+|\d+\.\d+) (□) (\d+))$/)
-            this.dispatchRes(this.inpValue.substring(0, this.inpValue.length - exp[0].length) + Number(exp[2]) ** Number(exp[4]), dispatch)
-        }
-    },
-
-    checkLastPow(): true | void {
-        if (this.expLastPow.test(this.inpValue)) return true
+    checkLastPow() {
+        return this.expLastPow.test(this.inpValue)
     },
 
     countingMemory(sign: string) {
-        if (this.expAnyLastNumber.test(this.inpValue)) {
-            const exp: any = this.inpValue.match(this.expAnyLastNumber)
-            const expNum = Number(exp[0])
+        const matchResult = this.expAnyLastNumber.test(this.inpValue) && this.inpValue.match(this.expAnyLastNumber)
+
+        if (matchResult) {
+            const expNum = Number(matchResult[0])
+
             if (sign === '+') {
                 this.memoryValue += expNum
             } else {
@@ -54,50 +59,60 @@ export const Calculator = {
         }
     },
 
-    saveMemoryHelper(letterM: any) {
-        if (this.checkInpLength()) return
-        const exp: any = this.inpValue.match(this.expAnyLastNumber)
-        this.memoryValue = Number(exp[0])
-        letterM.style.display = 'block'
+    checkResLength(valueLength: number, res: number, dispatch: AppDispatch) {
+        const currentValueLength = this.inpValue.length
+        const formattedRes = (res < 1 || !Number.isInteger(res)) ? res.toFixed(2) : Math.round(res)
+        this.dispatchRes(this.inpValue.substring(0, currentValueLength - valueLength) + formattedRes, dispatch)
     },
 
-    checkResLength(valueLength: number, res: number, dispatch: any) {
-        const currentValueLength = this.inpValue.length
-        if (res < 1 || !Number.isInteger(res)) {
-            this.dispatchRes(this.inpValue.substring(0, currentValueLength - valueLength) + res.toFixed(2), dispatch)
-        } else {
-            this.dispatchRes(this.inpValue.substring(0, currentValueLength - valueLength) + Math.round(res), dispatch)
+    checkLastNum() {
+        return this.inpValue.length === 0 || this.expLastSpace.test(this.inpValue)
+    },
+
+    enteringSignKeyboardHelper(sign: string, dispatch: AppDispatch) {
+        this.dispatchRes(`${this.inpValue} ${sign} `, dispatch)
+    },
+
+    containerListener(e: MouseEvent, dispatch: AppDispatch) {
+        const target = e.target as HTMLButtonElement
+
+        if (e.target) {
+            if (this.checkInpLength()) return
+
+            const value = target.getAttribute('value')
+
+            if (value && this.isResult) return this.dispatchRes(value, dispatch, false)
+            if (value) this.checkLastZero(value, dispatch)
         }
     },
 
-    checkLastNum(): true | void {
-        if (this.inpValue.length === 0 || this.expLastSpace.test(this.inpValue)) return true
-    },
-
-    enteringSignKeyboardHelper(sign: string, dispatch: any): boolean {
-        this.dispatchRes(this.inpValue + ' ' + sign + ' ', dispatch)
-        return true
-    },
-
-    containerListener(e: any, dispatch: any) {
-        if (this.checkInpLength()) return
-        const value = e.target.getAttribute('value')
-        if (value && this.isResult) return this.dispatchRes(value, dispatch, false)
-        if (value) this.checkLastZero(value, dispatch)
-    },
-
-    dotListener(dispatch: any) {
+    dotListener(dispatch: AppDispatch) {
         if (this.checkLastPow() || this.isResult) return
-        if (this.expLastNum.test(this.inpValue) && !/(\d+\.\d+)$|(\d+\.)$/.test(this.inpValue)) this.dispatchRes(this.inpValue + '.', dispatch)
+
+        const hasDot = /(\d+\.\d+)$|(\d+\.)$/.test(this.inpValue)
+        if (this.expLastNum.test(this.inpValue) && !hasDot) this.dispatchRes(this.inpValue + '.', dispatch)
     },
 
-    cleanMemory(letterM: any) {
+    saveMemoryHelper(dispatch: AppDispatch) {
+        if (this.checkInpLength()) return
+
+        const exp = this.inpValue.match(this.expAnyLastNumber)
+        if (exp) this.memoryValue = Number(exp[0])
+
+        dispatch(setIsMemorized(true))
+    },
+
+    cleanMemory() {
         this.memoryValue = 0
-        letterM.style.display = 'none'
     },
 
-    plusMemory(letterM: any) {
-        if (this.expAnyLastNumber.test(this.inpValue) && getComputedStyle(letterM).display === 'none') this.saveMemoryHelper(letterM)
+    readMemory(dispatch: AppDispatch) {
+        if (this.memoryValue === 0) return
+        this.dispatchRes(this.memoryValue.toString().substring(0, 15), dispatch)
+    },
+
+    plusMemory(dispatch: AppDispatch, isMemorized: boolean) {
+        if (this.expAnyLastNumber.test(this.inpValue) && !isMemorized) this.saveMemoryHelper(dispatch)
         this.countingMemory('+')
     },
 
@@ -105,83 +120,84 @@ export const Calculator = {
         this.countingMemory('-')
     },
 
-    readMemory(dispatch: any) {
-        if (this.memoryValue === 0) return
-        this.dispatchRes(this.memoryValue.toString().substring(0, 15), dispatch)
+    saveMemory(dispatch: AppDispatch) {
+        if (this.expAnyLastNumber.test(this.inpValue)) this.saveMemoryHelper(dispatch)
     },
 
-    saveMemory(letterM: any) {
-        if (this.expAnyLastNumber.test(this.inpValue)) this.saveMemoryHelper(letterM)
-    },
-
-    signListener(e: any, sign: string, dispatch: any) {
+    signListener(e: MouseEvent, sign: string, dispatch: AppDispatch) {
         if (this.checkInpLength()) return
+
         if (this.expLastNum.test(this.inpValue) && this.inpValue.length > 0) {
             this.countingPow(dispatch)
-            this.dispatchRes(this.inpValue + ' ' + sign + ' ', dispatch, false)
+            this.dispatchRes(`${this.inpValue} ${sign} `, dispatch, false)
         }
     },
 
-    squareListener(dispatch: any) {
+    squareListener(dispatch: AppDispatch) {
         if (this.checkLastPow()) return
+
         if (this.expPosNum.test(this.inpValue)) {
-            const exp: any = this.inpValue.match(this.expAnyLastNumber)
-            if (Number(exp[0]) < 0) return
-            this.checkResLength(exp[0].length, Math.sqrt(Number(exp[0])), dispatch)
+            const exp = this.inpValue.match(this.expAnyLastNumber)
+            if (exp && Number(exp[0]) >= 0) this.checkResLength(exp[0].length, Math.sqrt(Number(exp[0])), dispatch)
         }
     },
 
-    invPropListener(dispatch: any) {
+    invPropListener(dispatch: AppDispatch) {
         if (this.checkLastPow()) return
-        if (this.expPosNum.test(this.inpValue)) {
-            const exp: any = this.inpValue.match(this.expPosNum)
-            this.checkResLength(exp[0].length, 1 / Number(exp[0]), dispatch)
-        }
-    },
 
-    changeSign(dispatch: any) {
-        if (this.checkLastPow()) return
         if (this.expPosNum.test(this.inpValue)) {
-            const exp: any = this.inpValue.match(this.expAnyLastNumber)
-            const valueLength = this.inpValue.length
-            const expLength = exp[0].length
-            const res = Number(exp[0])
-            if (Number(exp[0]) > 0 ) {
-                this.dispatchRes(this.inpValue.substring(0, valueLength - expLength) + (res * -1), dispatch)
-            } else {
-                this.dispatchRes(this.inpValue.substring(0, valueLength - expLength) + Math.abs(res), dispatch)
+            const exp = this.inpValue.match(this.expPosNum)
+            if (exp) {
+                const inverse = 1 / Number(exp[0])
+                this.checkResLength(exp[0].length, inverse, dispatch)
             }
         }
     },
 
-    cleanUpInput(dispatch: any) {
+    changeSign(dispatch: AppDispatch) {
+        if (this.checkLastPow()) return
+
+        if (this.expPosNum.test(this.inpValue)) {
+            const exp = this.inpValue.match(this.expAnyLastNumber)
+
+            if (exp) {
+                const valueLength = this.inpValue.length
+                const expLength = exp[0].length
+                const res = Number(exp[0])
+                const newValue = (res > 0) ? (res * -1) : Math.abs(res)
+                this.dispatchRes(this.inpValue.substring(0, valueLength - expLength) + newValue, dispatch)
+            }
+        }
+    },
+
+    cleanUpInput(dispatch: AppDispatch) {
         this.dispatchRes('', dispatch, false)
     },
 
-    deleteListener(dispatch: any) {
+    deleteListener(dispatch: AppDispatch) {
         const valueLength = this.inpValue.length
+
         if (this.isResult) {
             this.dispatchRes('', dispatch, false)
         } else if (this.expLastSpace.test(this.inpValue)) {
             this.dispatchRes(this.inpValue.substring(0, valueLength - 3), dispatch)
         } else if (this.expNegNum.test(this.inpValue)) {
-            const exp: any = this.inpValue.match(this.expNegNum)
-            this.dispatchRes(this.inpValue.substring(0, valueLength - exp[1].length), dispatch)
+            const exp = this.inpValue.match(this.expNegNum)
+            if (exp) this.dispatchRes(this.inpValue.substring(0, valueLength - exp[1].length), dispatch)
         } else {
             this.dispatchRes(this.inpValue.substring(0, valueLength - 1), dispatch)
         }
     },
 
-    fullCleaning(letterM: any, dispatch: any) {
+    fullCleaning(dispatch: AppDispatch) {
         this.cleanUpInput(dispatch)
-        if (getComputedStyle(letterM).display === 'block') this.cleanMemory(letterM)
     },
 
-    equalListener(dispatch: any) {
+    equalListener(dispatch: AppDispatch) {
         if (this.inpValue.length === 0 || /^(\d+)$/.test(this.inpValue) || this.expLastSpace.test(this.inpValue)) return
 
-        const numbers: any = this.inpValue.match(/(\d+\.\d+)|(-\d+\.\d+)|(\d+)|(-\d+)/g)
-        const signs: any = this.inpValue.match(/(- )|[+%*/□]/g)
+        const numbers = this.inpValue.match(/(\d+\.\d+)|(-\d+\.\d+)|(\d+)|(-\d+)/g)
+        const signs = this.inpValue.match(/(- )|[+%*/□]/g)
 
         function sortEqualArrays(signs: RegExpMatchArray, numbers: RegExpMatchArray, sign: string) {
             const index = signs.indexOf(sign)
@@ -202,60 +218,64 @@ export const Calculator = {
         }
 
         function sortHelper() {
-            if (signs.includes('□')) return sortEqualArrays(signs, numbers, '□')
-            if (signs.includes('*') && !signs.includes('/') || signs.includes('*') && signs.indexOf('*') < signs.indexOf('/')) return sortEqualArrays(signs, numbers, '*')
-            if (signs.includes('/') && !signs.includes('*') || signs.includes('/') && signs.indexOf('/') < signs.indexOf('*')) return sortEqualArrays(signs, numbers, '/')
-            if (signs.includes('%') && !signs.includes('*') && !signs.includes('/') || signs.includes('%') && signs.indexOf('%') < signs.indexOf('×') && signs.indexOf('/')) return sortEqualArrays(signs, numbers, '%')
-            if (signs.includes('+') && !signs.includes('- ') || signs.includes('+') && signs.indexOf('+') < signs.indexOf('- ')) return sortEqualArrays(signs, numbers, '+')
-            if (signs.includes('- ') && !signs.includes('+') || signs.includes('- ') && signs.indexOf('- ') < signs.indexOf('+')) return sortEqualArrays(signs, numbers, '- ')
+            if (signs && numbers) {
+                if (signs.includes('□')) return sortEqualArrays(signs, numbers, '□')
+                if (signs.includes('*') && !signs.includes('/') || signs.includes('*') && signs.indexOf('*') < signs.indexOf('/')) return sortEqualArrays(signs, numbers, '*')
+                if (signs.includes('/') && !signs.includes('*') || signs.includes('/') && signs.indexOf('/') < signs.indexOf('*')) return sortEqualArrays(signs, numbers, '/')
+                if (signs.includes('%') && !signs.includes('*') && !signs.includes('/') || signs.includes('%') && signs.indexOf('%') < signs.indexOf('×') && signs.indexOf('/')) return sortEqualArrays(signs, numbers, '%')
+                if (signs.includes('+') && !signs.includes('- ') || signs.includes('+') && signs.indexOf('+') < signs.indexOf('- ')) return sortEqualArrays(signs, numbers, '+')
+                if (signs.includes('- ') && !signs.includes('+') || signs.includes('- ') && signs.indexOf('- ') < signs.indexOf('+')) return sortEqualArrays(signs, numbers, '- ')
+            }
         }
 
-        for (let i = 0; i <= signs.length + 6; i++) sortHelper()
-        setTimeout(() => {
-            this.dispatchRes(numbers[0], dispatch, true)
-        })
+        if (signs && numbers) {
+            for (let i = 0; i <= signs.length + 6; i++) sortHelper()
+            setTimeout(() => this.dispatchRes(numbers[0], dispatch, true))
+        }
     },
 
-    enteringSignKeyboard(sign: string, dispatch: any) {
+    enteringSignKeyboard(sign: string, dispatch: AppDispatch) {
         this.countingPow(dispatch)
         this.isResult = false
-        if (this.pressed.includes('Shift') && this.pressed.includes('+') || this.pressed.includes('Shift') && this.pressed.includes('%') || this.pressed.includes('Shift') && this.pressed.includes('*')) {
-            return this.enteringSignKeyboardHelper(sign, dispatch)
-        } else {
-            return this.enteringSignKeyboardHelper(sign, dispatch)
-        }
+        return this.enteringSignKeyboardHelper(sign, dispatch)
     },
 
     checkLengthArr() {
-        if (this.pressed) {
-            const pressedLength = this.pressed.length
-            if (pressedLength > 0) this.pressed.length = pressedLength - 1
-        }
+        if (this.pressed && this.pressed.length > 0) this.pressed.pop()
     },
 
     keyDown(e: any, dispatch: any) {
         if (e.key === 'Backspace') this.deleteListener(dispatch)
+
         if (e.key === '=' || e.key === 'Enter') {
             if (/^(\d+)$/.test(this.inpValue) || this.checkLastNum()) return
             this.equalListener(dispatch)
         }
 
         if (this.checkInpLength()) return
+
         if (!this.pressed.includes(e.key)) this.pressed.push(e.key)
 
-        if (e.key === '0' || e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4' || e.key === '5' || e.key === '6' || e.key === '7' || e.key === '8' || e.key === '9') {
+        if (/^[0-9]$/.test(e.key)) {
             if (this.isResult) this.dispatchRes(e.key, dispatch, false)
             this.checkLastZero(e.key, dispatch)
         }
 
         if (this.checkLastNum()) return
 
+        switch (e.key) {
+            case '*':
+                return this.enteringSignKeyboard('×', dispatch)
+            case '+' || '-' || '/' || '%':
+                return this.enteringSignKeyboard(e.key, dispatch)
+            case '.':
+                return this.dotListener(dispatch)
+            default:
+                break
+        }
+
         if (e.key === '*') return this.enteringSignKeyboard('×', dispatch)
-        if (e.key === '+') return this.enteringSignKeyboard('+', dispatch)
-        if (e.key === '-') return this.enteringSignKeyboard('-', dispatch)
-        if (e.key === '/') return this.enteringSignKeyboard('/', dispatch)
-        if (e.key === '+') return this.enteringSignKeyboard('+', dispatch)
-        if (e.key === '%') return this.enteringSignKeyboard('%', dispatch)
+        if (/[+\-\/%]/.test(e.key)) return this.enteringSignKeyboard(e.key, dispatch)
         if (e.key === '.') this.dotListener(dispatch)
     }
 }
