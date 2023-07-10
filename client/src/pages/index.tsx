@@ -22,7 +22,7 @@ const Home = () => {
                 <title>Calculator</title>
                 <link rel={'icon'} href={'favicon.png'}/>
             </Head>
-            <div onClick={(e: any) => Calculator.containerListener(e, dispatch)} className={`${styles.container} w-fit rounded-lg p-3 text-white`}>
+            <div onClick={(e) => Calculator.containerListener(e as any, dispatch)} className={`${styles.container} w-fit rounded-lg p-3 text-white`}>
                 <Result />
                 <Memory />
                 <Controls />

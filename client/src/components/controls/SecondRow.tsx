@@ -23,7 +23,7 @@ const SecondRowComponent = () => {
             } />
             <ControlBtn clickListener={fullCleaning} value={<i className={'fa-solid fa-c'} />} />
             <ControlBtn clickListener={() => Calculator.deleteListener(dispatch)} value={<i className={'fa-solid fa-delete-left'} />} />
-            <button onClick={(e) => Calculator.signListener(e, '/', dispatch)} className={'flex-center'}>
+            <button onClick={(e) => Calculator.signListener(e as any, '/', dispatch)} className={'flex-center'}>
                 <i className={'fa-solid fa-divide'}/>
             </button>
         </div>

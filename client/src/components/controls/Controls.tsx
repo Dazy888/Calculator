@@ -16,9 +16,9 @@ const ControlsComponent = () => {
         <div className={`${styles.controls} text-4xl`}>
             <FirstRow />
             <SecondRow />
-            <IntegerButtons getCustomAttr={getCustomAttr} signListener={(e: any) => Calculator.signListener(e, '*', dispatch)} values={['7', '8', '9']} icon={'xmark'}/>
-            <IntegerButtons getCustomAttr={getCustomAttr} signListener={(e: any) => Calculator.signListener(e, '-', dispatch)} values={['4', '5', '6']} icon={'minus'}/>
-            <IntegerButtons getCustomAttr={getCustomAttr} signListener={(e: any) => Calculator.signListener(e, '+', dispatch)} values={['1', '2', '3']} icon={'plus'}/>
+            <IntegerButtons getCustomAttr={getCustomAttr} signListener={(e) => Calculator.signListener(e as any, '*', dispatch)} values={['7', '8', '9']} icon={'xmark'}/>
+            <IntegerButtons getCustomAttr={getCustomAttr} signListener={(e) => Calculator.signListener(e as any, '-', dispatch)} values={['4', '5', '6']} icon={'minus'}/>
+            <IntegerButtons getCustomAttr={getCustomAttr} signListener={(e) => Calculator.signListener(e as any, '+', dispatch)} values={['1', '2', '3']} icon={'plus'}/>
             <ThirdRow getCustomAttr={getCustomAttr} />
         </div>
     )
