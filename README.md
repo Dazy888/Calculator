@@ -41,7 +41,7 @@ npm run dev
 yarn dev
 ```
 
-4) Open http://localhost:3000/ in your browser and use
+4) Open http://localhost:3000/ in your browser and use.
 
 ## Description
 
