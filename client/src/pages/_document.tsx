@@ -5,6 +5,7 @@ const Document = () => (
     <Html lang="en">
         <Head>
              <link rel={'stylesheet'} href={'/fontawesome/css/all.css'}/>
+            <link rel={'manifest'} href={'/manifest.json'}/>
         </Head>
         <body>
         <Main />
