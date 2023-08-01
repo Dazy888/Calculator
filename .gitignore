@@ -34,3 +34,11 @@ client/.vercel
 # typescript
 client/*.tsbuildinfo
 client/next-env.d.ts
+
+
+client/public/sw.js
+client/public/workbox-*.js
+client/public/worker-*.js
+client/public/sw.js.map
+client/public/workbox-*.js.map
+client/public/worker-*.js.map

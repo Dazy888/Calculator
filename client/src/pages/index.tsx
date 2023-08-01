@@ -17,7 +17,7 @@ const Home = () => {
     }, [])
 
     return (
-        <div id={styles.wrapper} className={'min-h-screen opacity-90 flex justify-center items-center'}>
+        <div id={styles.wrapper} className={'min-h-screen opacity-90 py-10 flex justify-center items-center'}>
             <Head>
                 <title>Calculator</title>
                 <link rel={'icon'} href={'favicon.png'}/>
